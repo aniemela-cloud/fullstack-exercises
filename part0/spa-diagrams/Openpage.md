@@ -13,12 +13,12 @@ sequenceDiagram
     Note left of browser: Browser parses HTML document, starts fetching<br/>linked documents.
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
     activate server
-    server-->>browser 200 OK<br/>CSS document
+    server-->>browser: 200 OK<br/>CSS document
     deactivate server
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
     activate server
-    server-->>browser 200 OK<br/>JavaScript document
+    server-->>browser: 200 OK<br/>JavaScript document
     deactivate server
 
     Note left of browser: Fetched JavaScript code executes, triggers fetch of JSON file.
