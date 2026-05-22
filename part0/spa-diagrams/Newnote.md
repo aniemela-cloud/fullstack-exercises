@@ -14,7 +14,7 @@ sequenceDiagram
     activate server
     Note right of browser: POST request contains the new note as JSON.
     server-->>browser: 201 Created
-    Note left of server: Server reply contains a JSON message string<br/>detailing whether the operation was succesful.
     deactivate server
+    Note left of server: Server reply contains a JSON message string<br/>detailing whether the operation was succesful.
     Note left of server: Note that notes added from other concurrent sessions<br/> are not automatically fetched.
 ```
