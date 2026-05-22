@@ -1,4 +1,4 @@
-# Loading SPA Note
+# Adding a new note with SPA exampleapp
 
 ```mermaid
 sequenceDiagram

@@ -1,4 +1,4 @@
-# Loading SPA Note
+# Loading the SPA exampleapp page
 
 ```mermaid
 sequenceDiagram
