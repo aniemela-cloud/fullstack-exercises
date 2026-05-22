@@ -8,9 +8,9 @@ sequenceDiagram
     Note left of browser: User activates the form submit button.
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note <br/>note=note+message
     activate server
+    Note right of server: Server receives form data.<br/>Browser is redirected to fetch exampleapp/notes
     server-->>browser: 302 FOUND Location: /exampleapp/notes
     deactivate server
-    Note right of server: Server receives form data.<br/>Browser is redirected to fetch exampleapp/notes
     activate browser
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     deactivate browser
