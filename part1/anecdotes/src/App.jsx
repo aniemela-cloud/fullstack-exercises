@@ -10,6 +10,26 @@ const NumVotesInfo = ({votes, selected}) => {
   )
 }
 
+const BestAnecdote = ({votes, anecdotes}) => {
+  let idx = 0;
+  let mostvotes = 0;
+  for (let i = 0; i < votes.length; i++) {
+    if(votes[i] > mostvotes) {
+      mostvotes = votes[i]
+      idx = i
+    }
+  }
+  // This could check for the case where all anecdotes have zero votes
+  // and display a different message, but that was not required in the exercise
+  return (
+    <div>
+      <h1>Anecdote with the most votes</h1>
+      <p>{anecdotes[idx]}</p>
+    </div>
+  )
+
+}
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -50,6 +70,7 @@ const App = () => {
   
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
       <NumVotesInfo votes={votes} selected={selected} />
       <button onClick={voteFor(selected)}>
@@ -58,6 +79,7 @@ const App = () => {
       <button onClick={setRandom}>
         New anecdote!
       </button>
+      <BestAnecdote votes={votes} anecdotes={anecdotes} />
     </div>
   )
 }
