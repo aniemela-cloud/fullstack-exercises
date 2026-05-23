@@ -20,12 +20,16 @@ const Feedback = ({addGood,addNeutral,addBad}) => {
 }
 
 const Stats = ({good, neutral, bad}) => {
+  let total = good+neutral+bad;
   return (
     <div>
       <h2>statistics</h2>
       <SpecificStatus text="good" count={good} />
       <SpecificStatus text="neutral" count={neutral} />
       <SpecificStatus text="bad" count={bad} />
+      <SpecificStatus text="all" count={total} />
+      <SpecificStatus text="average" count={(good-bad)/total} />
+      <SpecificStatus text="positive" count={(good*100/total)+" %"} />
     </div>
   )
 }
