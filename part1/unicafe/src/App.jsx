@@ -14,7 +14,7 @@ const Feedback = ({addGood,addNeutral,addBad}) => {
       <h1>give feedback</h1>
       <FeedbackButton text="good" onClick={addGood} />
       <FeedbackButton text="neutral" onClick={addNeutral} />
-      <FeedbackButton text="good" onClick={addBad} />
+      <FeedbackButton text="bad" onClick={addBad} />
     </div>
   )
 }
