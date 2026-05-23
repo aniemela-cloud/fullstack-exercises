@@ -1,5 +1,15 @@
 import { useState } from 'react'
 
+const NumVotesInfo = ({votes, selected}) => {
+  let votetext = "no votes"
+  if(votes[selected]) {
+    votetext = votes[selected] + " votes"
+  }
+  return (
+    <p>has {votetext}</p>
+  )
+}
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -11,7 +21,10 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
-   
+  // votes array is an empty array of anecdotes.length elements; the code displaying
+  // the votes needs to handle both 'undefined' and '0' and the code adding votes
+  // needs to do the same, too
+  const [votes, setVotes] = useState(Array(anecdotes.length))
   const [selected, setSelected] = useState(0)
 
   const setRandom = () => {
@@ -20,10 +33,28 @@ const App = () => {
     console.log("Setting to ",newval)
     setSelected(newval)
   }
+
+  const voteFor = (i) => { 
+    return () => {
+      console.log("voting for ",i)
+      let newvotes = votes.concat()
+      if(newvotes[i]) {
+        // it's not undefined or 0
+        newvotes[i] += 1
+      } else {
+        newvotes[i] = 1
+      }
+      setVotes(newvotes)
+    }
+  }
   
   return (
     <div>
       <p>{anecdotes[selected]}</p>
+      <NumVotesInfo votes={votes} selected={selected} />
+      <button onClick={voteFor(selected)}>
+        vote
+      </button>
       <button onClick={setRandom}>
         New anecdote!
       </button>
