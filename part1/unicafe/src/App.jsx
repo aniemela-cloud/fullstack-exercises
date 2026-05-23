@@ -32,12 +32,16 @@ const Stats = ({good, neutral, bad}) => {
     return (
       <div>
         <h2>statistics</h2>
-        <SpecificStatus text="good" count={good} />
-        <SpecificStatus text="neutral" count={neutral} />
-        <SpecificStatus text="bad" count={bad} />
-        <SpecificStatus text="all" count={total} />
-        <SpecificStatus text="average" count={(good - bad) / total} />
-        <SpecificStatus text="positive" count={(good * 100 / total) + " %"} />
+        <table>
+          <tbody>
+            <SpecificStatus text="good" count={good} />
+            <SpecificStatus text="neutral" count={neutral} />
+            <SpecificStatus text="bad" count={bad} />
+            <SpecificStatus text="all" count={total} />
+            <SpecificStatus text="average" count={(good - bad) / total} />
+            <SpecificStatus text="positive" count={(good * 100 / total) + " %"} />
+          </tbody>
+        </table>
       </div>
     )
   }
@@ -45,9 +49,11 @@ const Stats = ({good, neutral, bad}) => {
 
 const SpecificStatus = ({text, count}) => {
   return (
-    <p>{text} {count}</p>
+    <tr>
+      <td>{text}</td> 
+      <td>{count}</td>
+    </tr>
   )
-
 }
 
 
