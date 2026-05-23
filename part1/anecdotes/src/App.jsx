@@ -37,7 +37,7 @@ const App = () => {
   const voteFor = (i) => { 
     return () => {
       console.log("voting for ",i)
-      let newvotes = votes.concat()
+      let newvotes = [...votes]
       if(newvotes[i]) {
         // it's not undefined or 0
         newvotes[i] += 1
