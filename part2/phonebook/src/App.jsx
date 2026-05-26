@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import phonebookService from './services/phonebook'
+import Notification from './components/Notification'
 
 const Phonebook = ({persons, filter, deleteAction}) => {
   let personlist;
@@ -63,6 +64,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [nameFilter, setNameFilter] = useState('');
+  const [notifyMessage, setNotifyMessage] = useState(null);
 
   useEffect(() => {
     //console.log("effect triggered");
@@ -92,6 +94,8 @@ const App = () => {
           setPersons(persons.concat(data));
           setNewName('');
           setNewNumber('');
+          setNotifyMessage(`${data.name} added to phonebook.`);
+          setTimeout(() => setNotifyMessage(null), 5000);
         });
     } else {
       let confResult = confirm(`${newPerson.name} is already in the phonebook. Replace their phone number with this one?`)
@@ -105,6 +109,8 @@ const App = () => {
           .then(data => {
             // data should have a JS object with the data we sent to the server
             setPersons(persons.map(person => person.id === data.id ? data : person));
+            setNotifyMessage(`${data.name} phone number updated.`);
+            setTimeout(() => setNotifyMessage(null), 5000);
           })
       }
     }
@@ -129,9 +135,10 @@ const App = () => {
     phonebookService.deleteById(phonebookId)
       .then(result => {
         console.log('deleteById result: ', result)
-        // the result.data contains the person we deleted, but since it's
-        // id is going to be the same as phonebookId, we can pretty much ignore it
         setPersons(persons.filter(person => person.id !== phonebookId));
+        setNotifyMessage(`${result.data.name} removed from phonebook.`);
+        setTimeout(() => setNotifyMessage(null), 5000);
+
       })
       .catch(error => {
         console.log('error caught from deleteById', error);
@@ -142,6 +149,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notifyMessage} />
       <PersonForm
         onSubmit={addName}
         newName={newName}
