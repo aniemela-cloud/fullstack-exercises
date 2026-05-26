@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
-
+import phonebookService from './services/phonebook'
 
 const Phonebook = ({persons, filter}) => {
   let personlist;
@@ -64,10 +63,9 @@ const App = () => {
 
   useEffect(() => {
     //console.log("effect triggered");
-    axios.get("http://localhost:3001/persons")
-    .then(response => {
-      //console.log("promise.then: response.data:", response.data);
-      setPersons(response.data)
+    phonebookService.getAll()
+    .then(data => {
+      setPersons(data)
     })
   }, []);
 
@@ -86,9 +84,9 @@ const App = () => {
       // JSON server generates a unique ID for the entry when
       // POSTed in, so we don't have to think about it here.
       // Different backends would work differently, of course.
-      axios.post('http://localhost:3001/persons',newPerson)
-      .then(response => {
-        setPersons(persons.concat(response.data));
+      phonebookService.addNew(newPerson)
+      .then(data => {
+        setPersons(persons.concat(data));
         setNewName('');
         setNewNumber('');
       });
