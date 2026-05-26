@@ -22,6 +22,38 @@ const Person = ({person}) => {
   )
 };
 
+const Filter = ({nameFilter, onChange}) => {
+  return (
+    <p>Filter by name:
+      <input name="nameFilterInput" onChange={onChange} value={nameFilter} />
+    </p>
+  ) 
+}
+
+const PersonForm = ({onSubmit, newName, onNameChange, newNumber, onNumberChange}) => {
+  return (
+    <form onSubmit={onSubmit}>
+      <div>
+        <h2>Add new entry</h2>
+        name: <input name="newNameInput" onChange={onNameChange} value={newName} /> <br />
+        number: <input name="newNumberInput" onChange={onNumberChange} value={newNumber} />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  )
+}
+/*
+ <PersonForm 
+  onSubmit={addName}
+  newName={newName}
+  onNameChange={handleNameChange}
+  newNumber={newNumber}
+  onNumberChange={handleNumberChange}
+  />
+  
+*/
 const App = () => {
  const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -70,18 +102,15 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <form onSubmit={addName}>
-        <div>
-          <h2>Add new entry</h2>
-          name: <input name="newNameInput" onChange={handleNameChange} value={newName} /> <br />
-          number: <input name="newNumberInput" onChange={handleNumberChange} value={newNumber} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        onSubmit={addName}
+        newName={newName}
+        onNameChange={handleNameChange}
+        newNumber={newNumber}
+        onNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      <p>Filter by name: <input name="nameFilterInput" onChange={handleNameFilterChange} value={nameFilter} /></p>
+        <Filter nameFilter={nameFilter} onChange={handleNameFilterChange} />
         <Phonebook persons={persons} filter={nameFilter}/>
     </div>
   )
