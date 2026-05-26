@@ -65,6 +65,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [nameFilter, setNameFilter] = useState('');
   const [notifyMessage, setNotifyMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     //console.log("effect triggered");
@@ -142,14 +143,16 @@ const App = () => {
       })
       .catch(error => {
         console.log('error caught from deleteById', error);
-        alert("That phonebook entry is was no longer present on the server.");
+        setErrorMessage("That phonebook entry is no longer present on the server.");
+        setTimeout(() => setErrorMessage(null), 5000)
     })
   }
 
   return (
     <div>
       <h1>Phonebook</h1>
-      <Notification message={notifyMessage} />
+      <Notification message={notifyMessage} className="notice" />
+      <Notification message={errorMessage} className="error" />
       <PersonForm
         onSubmit={addName}
         newName={newName}

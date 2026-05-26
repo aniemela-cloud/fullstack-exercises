@@ -4,3 +4,9 @@ div.notice {
     color:whitesmoke;
     padding: 4px;
 }
+div.error {
+    border: 1px solid darkred ;
+    background-color: lightgray;
+    color:darkred;
+    padding: 4px;
+}
