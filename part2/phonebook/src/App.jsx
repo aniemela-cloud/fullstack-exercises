@@ -13,7 +13,7 @@ const Phonebook = ({persons, filter}) => {
   }
   return (
     <div>
-      {personlist.map((person) => <Person person={person} key={person.name}/>)}
+      {personlist.map((person) => <Person person={person} key={person.id}/>)}
     </div>
   )
 }
@@ -57,7 +57,7 @@ const PersonForm = ({onSubmit, newName, onNameChange, newNumber, onNumberChange}
   
 */
 const App = () => {
- const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [nameFilter, setNameFilter] = useState('');
@@ -78,14 +78,20 @@ const App = () => {
       name: newName,
       number: newNumber
     };
+    
     const found = persons.find(
       (element) => element.name.toLowerCase() === newPerson.name.toLowerCase()
     );
     if (found === undefined) {
-      //console.log("addName newPerson: ",newPerson);
-      setPersons(persons.concat(newPerson));
-      setNewName('');
-      setNewNumber('');
+      // JSON server generates a unique ID for the entry when
+      // POSTed in, so we don't have to think about it here.
+      // Different backends would work differently, of course.
+      axios.post('http://localhost:3001/persons',newPerson)
+      .then(response => {
+        setPersons(persons.concat(response.data));
+        setNewName('');
+        setNewNumber('');
+      });
     } else {
       alert(`${newPerson.name} is already in the phonebook`)
     }
