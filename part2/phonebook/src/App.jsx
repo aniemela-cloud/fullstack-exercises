@@ -10,21 +10,25 @@ const Phonebook = ({persons}) => {
 
 const Person = ({person}) => {
   return (
-    <p>{person.name}</p>
+    <p>{person.name}: {person.number}</p>
   )
 };
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas',
+      number: '040-1234567'
+     }
   ]); 
   const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
 
   const addName = (event) => {
     event.preventDefault();
     //console.log("addName: ", event)
     const newPerson = {
-      name: newName
+      name: newName,
+      number: newNumber
     };
     const found = persons.find(
       (element) => element.name.toLowerCase() === newPerson.name.toLowerCase()
@@ -33,6 +37,7 @@ const App = () => {
       //console.log("addName newPerson: ",newPerson);
       setPersons(persons.concat(newPerson));
       setNewName('');
+      setNewNumber('');
     } else {
       alert(`${newPerson.name} is already in the phonebook`)
     }
@@ -43,12 +48,17 @@ const App = () => {
     setNewName(event.target.value);
   };
 
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value);
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
       <form onSubmit={addName}>
         <div>
-          name: <input name="newNameInput" onChange={handleNameChange} value={newName} />
+          name: <input name="newNameInput" onChange={handleNameChange} value={newName} /> <br />
+          number: <input name="newNumberInput" onChange={handleNumberChange} value={newNumber} />
         </div>
         <div>
           <button type="submit">add</button>
