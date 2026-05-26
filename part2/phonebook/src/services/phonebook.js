@@ -10,4 +10,9 @@ const addNew = (newEntry) => {
     return axios.post(baseUrl, newEntry)
     .then(response => response.data)
 }
-export default { getAll, addNew }
+
+const deleteById = (entryId) => {
+    return axios.delete(`${baseUrl}/${entryId}`)
+}
+
+export default { getAll, addNew, deleteById }

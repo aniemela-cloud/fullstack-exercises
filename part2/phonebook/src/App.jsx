@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import phonebookService from './services/phonebook'
 
-const Phonebook = ({persons, filter}) => {
+const Phonebook = ({persons, filter, deleteAction}) => {
   let personlist;
   if(filter) {
     personlist = persons.filter(
@@ -12,14 +12,17 @@ const Phonebook = ({persons, filter}) => {
   }
   return (
     <div>
-      {personlist.map((person) => <Person person={person} key={person.id}/>)}
+      {personlist.map((person) => 
+      <Person person={person} 
+        key={person.id}
+        deleteAction={() => deleteAction(person.id)}/>)}
     </div>
   )
 }
 
-const Person = ({person}) => {
+const Person = ({person, deleteAction}) => {
   return (
-    <p>{person.name}: {person.number}</p>
+    <p>{person.name}: {person.number} <button onClick={deleteAction}> delete </button></p>
   )
 };
 
@@ -108,6 +111,21 @@ const App = () => {
     setNameFilter(event.target.value);
   }
 
+  const deleteActionFor = (phonebookId) => {
+    console.log("deleteAction for ",phonebookId)
+    phonebookService.deleteById(phonebookId)
+      .then(result => {
+        console.log('deleteById result: ', result)
+        // the result.data contains the person we deleted, but since it's
+        // id is going to be the same as phonebookId, we can pretty much ignore it
+        setPersons(persons.filter(person => person.id !== phonebookId));
+      })
+      .catch(error => {
+        console.log('error caught from deleteById', error);
+        alert("That phonebook entry is was no longer present on the server.");
+    })
+  }
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -120,7 +138,7 @@ const App = () => {
       />
       <h2>Numbers</h2>
         <Filter nameFilter={nameFilter} onChange={handleNameFilterChange} />
-        <Phonebook persons={persons} filter={nameFilter}/>
+        <Phonebook persons={persons} filter={nameFilter} deleteAction={deleteActionFor} />
     </div>
   )
 }
