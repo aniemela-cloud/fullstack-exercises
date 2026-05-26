@@ -88,15 +88,28 @@ const App = () => {
       // POSTed in, so we don't have to think about it here.
       // Different backends would work differently, of course.
       phonebookService.addNew(newPerson)
-      .then(data => {
-        setPersons(persons.concat(data));
-        setNewName('');
-        setNewNumber('');
-      });
+        .then(data => {
+          setPersons(persons.concat(data));
+          setNewName('');
+          setNewNumber('');
+        });
     } else {
-      alert(`${newPerson.name} is already in the phonebook`)
+      let confResult = confirm(`${newPerson.name} is already in the phonebook. Replace their phone number with this one?`)
+      if (confResult) {
+        // get ID from the found record and store it in newPerson just in case;
+        // JSON server documentation is rather sparse, and does not state what
+        // happens with a PUT request if the data segment does not include the 
+        // ID...
+        newPerson.id = found.id;
+        phonebookService.updateById(found.id, newPerson)
+          .then(data => {
+            // data should have a JS object with the data we sent to the server
+            setPersons(persons.map(person => person.id === data.id ? data : person));
+          })
+      }
     }
   };
+
 
   const handleNameChange = (event) => {
     //console.log("handleNameChange, target", event.target);

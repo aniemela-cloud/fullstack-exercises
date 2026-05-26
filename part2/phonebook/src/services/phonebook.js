@@ -15,4 +15,9 @@ const deleteById = (entryId) => {
     return axios.delete(`${baseUrl}/${entryId}`)
 }
 
-export default { getAll, addNew, deleteById }
+const updateById = (entryId, updatedEntry) => {
+    return axios.put(`${baseUrl}/${entryId}`, updatedEntry)
+    .then(response => response.data)
+}
+
+export default { getAll, addNew, deleteById, updateById }

@@ -19,6 +19,11 @@
       "name": "Martti Maasikas",
       "number": "045 123 4567",
       "id": "1JajtmF3gV0"
+    },
+    {
+      "name": "Eki",
+      "number": "999999",
+      "id": "RIBniENhr3Q"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
