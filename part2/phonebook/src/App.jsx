@@ -1,9 +1,17 @@
 import { useState } from 'react'
 
-const Phonebook = ({persons}) => {
+const Phonebook = ({persons, filter}) => {
+  let personlist;
+  if(filter) {
+    personlist = persons.filter(
+      (element) => element.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  } else {
+    personlist = persons;
+  }
   return (
     <div>
-      {persons.map((person) => <Person person={person} key={person.name}/>)}
+      {personlist.map((person) => <Person person={person} key={person.name}/>)}
     </div>
   )
 }
@@ -15,13 +23,16 @@ const Person = ({person}) => {
 };
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas',
-      number: '040-1234567'
-     }
-  ]); 
+ const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '040-123456', id: 1 },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
+  ])
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
+  const [nameFilter, setNameFilter] = useState('');
+
 
   const addName = (event) => {
     event.preventDefault();
@@ -52,11 +63,16 @@ const App = () => {
     setNewNumber(event.target.value);
   }
 
+  const handleNameFilterChange = (event) => {
+    setNameFilter(event.target.value);
+  }
+
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
       <form onSubmit={addName}>
         <div>
+          <h2>Add new entry</h2>
           name: <input name="newNameInput" onChange={handleNameChange} value={newName} /> <br />
           number: <input name="newNumberInput" onChange={handleNumberChange} value={newNumber} />
         </div>
@@ -65,7 +81,8 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-        <Phonebook persons={persons} />
+      <p>Filter by name: <input name="nameFilterInput" onChange={handleNameFilterChange} value={nameFilter} /></p>
+        <Phonebook persons={persons} filter={nameFilter}/>
     </div>
   )
 }
