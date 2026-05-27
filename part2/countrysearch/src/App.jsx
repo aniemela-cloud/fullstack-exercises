@@ -20,12 +20,30 @@ const CountryList = ({countrylist, country}) => {
     };
   },[selectedCountry])
 
+  const onFocusCountry = (name) => {
+    console.log('onFocusCountry name: ', name);
+    setSelectedCountry(name);
+  }
+
   if (!countrylist) {
     return null;
   }
   if (!country) {
     return null;
   }
+  if (selectedCountry &&
+    !selectedCountry.toLowerCase().includes(country.toLowerCase())
+  ) {
+    // this is getting horrible. 
+    // we see if we have a selected country that does
+    // not match the current search string; this means
+    // the search was modified after clicking a show button
+    // that selects a country to show, and the selected
+    // country won't be found in the list anymore. Clear
+    // the selection.
+    setSelectedCountry(null)
+  }
+
   console.log("country is ", country);
   const filteredCountries = countrylist.filter(
     (name) => name.toLowerCase().includes(country.toLowerCase())
@@ -38,7 +56,11 @@ const CountryList = ({countrylist, country}) => {
   } else if (filteredCountries.length > 1) {
     return (
       <>
-        {filteredCountries.map((name) => <p>{name}</p>)}
+        {filteredCountries.map((name) => 
+         <ListCountry name={name} 
+          onClick={() => onFocusCountry(name)} key={name}/>) 
+          }
+        { selectedCountry !== null && <CountryInfo countryObject={countryData} />} 
       </>
     )
   } else if (filteredCountries.length === 1) {
@@ -50,6 +72,15 @@ const CountryList = ({countrylist, country}) => {
     );
   }
 
+}
+
+const ListCountry = ({name, onClick}) => {
+  return (
+    <p>
+      {name} &nbsp;
+      <button onClick={onClick}>show</button>
+    </p>
+  )
 }
 
 const CountryInfo = ({countryObject}) => {
