@@ -42,6 +42,17 @@ app.get('/api/persons/:id', (request, response) => {
     }
 });
 
+app.delete('/api/persons/:id', (request, response) => {
+    const id = request.params.id;
+    const idx = persons.findIndex((person) => person.id === id);
+    if (idx === -1) {
+        response.status(404).end();
+    } else {
+        persons.splice(idx,1); // delete the found element by index
+        response.status(204).end();
+    }
+})
+
 app.get('/info', (request, response) => {
     let responseData = `<p>Phonebook has info on ${persons.length} people.</p>
 <p>${Date()}</p>`;
