@@ -136,8 +136,9 @@ const App = () => {
     phonebookService.deleteById(phonebookId)
       .then(result => {
         console.log('deleteById result: ', result)
+        let deletedPerson = persons.find(person => person.id === phonebookId);
         setPersons(persons.filter(person => person.id !== phonebookId));
-        setNotifyMessage(`${result.data.name} removed from phonebook.`);
+        setNotifyMessage(`${deletedPerson.name} removed from phonebook.`);
         setTimeout(() => setNotifyMessage(null), 5000);
 
       })
