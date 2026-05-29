@@ -24,9 +24,20 @@ let persons = [
     }
 ];
 
+app.use(express.json());
+
 app.get('/', (request, response) => {
     response.send('<h1>This is the phonebook backend</h1>')
 });
+
+
+app.get('/info', (request, response) => {
+    let responseData = `<p>Phonebook has info on ${persons.length} people.</p>
+<p>${Date()}</p>`;
+
+    response.send(responseData)
+});
+
 
 app.get('/api/persons', (request, response) => {
     response.json(persons)
@@ -53,14 +64,36 @@ app.delete('/api/persons/:id', (request, response) => {
     }
 })
 
-app.get('/info', (request, response) => {
-    let responseData = `<p>Phonebook has info on ${persons.length} people.</p>
-<p>${Date()}</p>`;
+app.post('/api/persons', (request, response) => {
+    const randId = Math.floor(Math.random() * 10000).toString(36);
+    let person = request.body;
+    if (!person) {
+        return response.status(400).json({
+            error: "empty request body"
+        });
+    }
+    if (typeof (person) !== "object") {
+        return response.status(400).json({
+            error: "malformed request body"
+        });
+    }
+    if (!person.name) {
+        return response.status(400).json({
+            error: "name missing"
+        });
+    }
+    person = {
+        name: person.name,
+        number: person.number,
+        id: randId
+    }
+    persons.push(person);
+    response.json(person);
+})
 
-    response.send(responseData)
-});
 
 const PORT = 3001
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}
+Started on: ${Date()}`)
 });
