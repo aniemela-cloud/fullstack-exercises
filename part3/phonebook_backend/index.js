@@ -32,6 +32,7 @@ morgan.token('rq-body', (req, res) => {
     return JSON.stringify(req.body)
 });
 
+app.use(express.static('dist'));
 app.use(cors());
 app.use(express.json());
 app.use(morgan('tiny',{ skip: (req, res) => { return req.method === "POST" } }));
