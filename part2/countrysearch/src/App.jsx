@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 const baseUrl = 'https://studies.cs.helsinki.fi/restcountries/api';
+const openweatherBaseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+const owApiKey = import.meta.env.VITE_OPENWEATHER_KEY;
 
 const CountryList = ({countrylist, country}) => {
   const [selectedCountry, setSelectedCountry] = useState(null)
@@ -87,7 +89,7 @@ const CountryInfo = ({countryObject}) => {
   if (!countryObject) {
     return null;
   }
-  console.log("languages: ", countryObject.languages);
+  //console.log("languages: ", countryObject.languages);
   return (
     <div>
       <h1>{countryObject.name.common}</h1>
@@ -99,8 +101,55 @@ const CountryInfo = ({countryObject}) => {
           {countryObject.languages[val]}</li>)}
       </ul>
       <img src={countryObject.flags["png"]} alt={"Flag of "+countryObject.name.common} />
+      <WeatherInfo lat={countryObject.capitalInfo.latlng[0]} lon={countryObject.capitalInfo.latlng[1]}
+        name={countryObject.capital[0]}
+      />
     </div>
   )
+}
+
+const WeatherInfo = ({lat, lon, name}) => {
+  const [weatherData, setWeatherData] = useState(null);
+  /* weatherData = 
+    {
+      temp: float,
+      wind: float,
+      icon: string,
+      alt: string
+      }
+  */
+
+  useEffect(() => {
+    const rqUrl = `${openweatherBaseUrl}?lat=${lat}&lon=${lon}&appid=${owApiKey}&units=metric`
+    axios.get(rqUrl).
+    then((result) => {
+      console.log('weather info received: ', result.data)
+      setWeatherData(
+        { 
+          temp: result.data.main.temp,
+          wind: result.data.wind.speed,
+          icon: result.data.weather[0].icon,
+          alt: result.data.weather[0].main
+        }
+      );
+    })
+    .catch((error) => {
+      console.log('error fetching openweather data: ',error)
+      setWeatherData(null);
+    })
+  },[lat, lon]);
+  if (!weatherData) {
+    return null;
+  }
+  return (
+    <div>
+      <h2>Weather in {name}</h2>
+      <p>Temperature {weatherData.temp} &#8451;</p>
+      <img src={`https://openweathermap.org/payload/api/media/file/${weatherData.icon}.png`} alt={weatherData.alt} title={weatherData.alt} />
+      <p>Wind {weatherData.wind} m/s</p>
+    </div>
+  );
+// 
 }
 
 function App() {
@@ -115,6 +164,8 @@ function App() {
     axios.get(`${baseUrl}/all`)
     .then((result) => {
       //console.log('got a result in api/all get', result)
+      // we don't store all the country info, but instead filter out the "common" names
+      // and save those in a stateful variable
       const country_array = result.data.map(country => country.name.common);
       //console.log('mapped to ',country_array)
       setCountrylist(country_array)
