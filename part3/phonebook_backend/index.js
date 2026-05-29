@@ -3,6 +3,8 @@ const morgan = require('morgan');
 
 const app = express();
 
+
+
 let persons = [
     {
         "id": "1",
@@ -26,10 +28,17 @@ let persons = [
     }
 ];
 
+morgan.token('rq-body', (req, res) => {
+    return JSON.stringify(req.body)
+});
+
 app.use(express.json());
-app.use(morgan('tiny'));
-
-
+app.use(morgan('tiny',{ skip: (req, res) => { return req.method === "POST" } }));
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :rq-body', 
+    { skip: (req, res) => { return req.method !== "POST" }}));
+// morgan format
+// POST /api/persons 200 61 - 4.896 ms {"name":"foo","number":"bar"}
+// :method :url :status :res[content-length] - :response-time ms :rq-body
 app.get('/', (request, response) => {
     response.send('<h1>This is the phonebook backend</h1>')
 });
