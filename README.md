@@ -6,3 +6,8 @@ Exercise returns for the Uni of Helsinki CS fullstack development course.
 
 - [https://fullstack-exercises-77ug.onrender.com/](https://fullstack-exercises-77ug.onrender.com/)
 - I do not know if the above address will work, or if it even will show the backend, as it will likely be replaced by the full stack application. I guess the backend will be there, too, though.
+
+## Part 3 Deploying the database backend to production (3.21)
+
+- [https://fullstack-exercises-77ug.onrender.com/](https://fullstack-exercises-77ug.onrender.com/)
+- I don't know why I'm copypasting the URL here. Maybe the URL should be a heading and the completed deployment phases listed under it? 
