@@ -1,17 +1,17 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const connectionUrl = process.env.MONGODB_URI;
+const connectionUrl = process.env.MONGODB_URI
 
-console.log('connecting to', connectionUrl);
+console.log('connecting to', connectionUrl)
 
 mongoose.connect(connectionUrl, { family: 4 })
-.then(result => {
-    console.log('connected to MongoDB');
-}).catch(error => {
-    console.log('error connecting to MongoDB:', error.message);
-});
+    .then(() => {
+        console.log('Connected to MongoDB')
+    }).catch(error => {
+        console.log('Error connecting to MongoDB:', error.message)
+    })
 
-mongoose.set('strictQuery', false);
+mongoose.set('strictQuery', false)
 
 const phonebookSchema = new mongoose.Schema({
     name: { 
@@ -23,19 +23,19 @@ const phonebookSchema = new mongoose.Schema({
         type: String,
         validate: {
             validator: function(val) {
-                return /^\d{2,3}-\d+$/.test(val);
+                return /^\d{2,3}-\d+$/.test(val)
             },
             message: props => `${props.value} is not a valid phone number! Only ##-#####... or ###-#####... accepted.`
         }
     }
-});
+})
 
 phonebookSchema.set('toJSON', {
     transform: (document, returnedObject) => {
-        returnedObject.id = returnedObject._id.toString();
-        delete returnedObject._id;
-        delete returnedObject.__v;
+        returnedObject.id = returnedObject._id.toString()
+        delete returnedObject._id
+        delete returnedObject.__v
     }
-});
+})
 
-module.exports = mongoose.model('Person', phonebookSchema);
+module.exports = mongoose.model('Person', phonebookSchema)
