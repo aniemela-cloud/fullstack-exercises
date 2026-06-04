@@ -97,6 +97,15 @@ const App = () => {
           setNewNumber('');
           setNotifyMessage(`${data.name} added to phonebook.`);
           setTimeout(() => setNotifyMessage(null), 5000);
+        }).catch(error => {
+          if(error && error.response && error.response.data) {
+            //console.log(error.response.data.error);
+            setErrorMessage(`${error.response.data.error}`);
+          } else {
+            setErrorMessage(`Unknown error encountered, check console.`);
+            console.log('Unknown error when adding new person to backend: ', error);
+          }
+          setTimeout(() => setErrorMessage(null), 5000);
         });
     } else {
       let confResult = confirm(`${newPerson.name} is already in the phonebook. Replace their phone number with this one?`)

@@ -14,7 +14,11 @@ mongoose.connect(connectionUrl, { family: 4 })
 mongoose.set('strictQuery', false);
 
 const phonebookSchema = new mongoose.Schema({
-    name: String,
+    name: { 
+        type: String,
+        minLength: 5,
+        required: true,
+    },
     number: String,  
 });
 

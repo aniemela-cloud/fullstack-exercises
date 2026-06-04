@@ -145,23 +145,24 @@ app.post('/api/persons', (request, response, next) => {
                 console.log(`Added ${result.name} number ${result.number} to phonebook.`);
                 response.json(result);
             }).catch(error => {
-                console.log('Error saving new phonebook entry: ', error);
-                response.status(500).end();
+                next(error);
             })    
         }
     }).catch(error => next(error));
     
 })
 
-const mongoCastErrorHandler = (error, request, response, next) => {
+const mongoErrorHandler = (error, request, response, next) => {
     console.error(error.message);
     if (error.name == "CastError") {
-        response.status(400).send({ error: 'malformatted id' });        
+        return response.status(400).send({ error: 'malformatted id' });        
+    } else if (error.name == "ValidationError") {
+        return response.status(400).json({error: error.message});
     }
     next(error);
-}
+};
 
-app.use(mongoCastErrorHandler);
+app.use(mongoErrorHandler);
 
 const PORT = process.env.port || 3001
 app.listen(PORT, () => {
