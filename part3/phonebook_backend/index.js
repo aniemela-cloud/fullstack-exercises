@@ -48,10 +48,12 @@ app.get('/', (request, response) => {
 
 
 app.get('/info', (request, response) => {
-    let responseData = `<p>Phonebook has info on ${persons.length} people.</p>
-<p>${Date()}</p>`;
-
-    response.send(responseData)
+    Person.estimatedDocumentCount().then(result => {
+        response.send(`<p>Phonebook has info on ${result} people.</p>
+<p>${Date()}</p>`);
+    }).catch(error => {
+        console.log('/info error', error);
+    });
 });
 
 
