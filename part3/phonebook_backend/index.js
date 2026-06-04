@@ -96,7 +96,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.put('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndUpdate(request.params.id, 
         {number: request.body.number}, 
-        {returnDocument:'after'}).then(result => {
+        {returnDocument:'after', runValidators:true }).then(result => {
             if(result) {
                 console.log('findByIdAndUpdate done: ',result);
                 response.json(result);
