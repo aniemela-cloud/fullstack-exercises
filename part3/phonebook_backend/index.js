@@ -69,7 +69,8 @@ app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id).then(person => {
         if (person) {
             response.json(person);
-        } else {
+        } 
+        else {
             response.status(404).end();
         }        
     }).catch(error => {
@@ -88,9 +89,23 @@ app.delete('/api/persons/:id', (request, response, next) => {
     }).catch(error => {
         next(error);
     });
-})
+});
 
-app.post('/api/persons', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndUpdate(request.params.id, 
+        {number: request.body.number}, 
+        {returnDocument:'after'}).then(result => {
+            if(result) {
+                console.log('findByIdAndUpdate done: ',result);
+                response.json(result);
+            }
+            else {
+                response.status(404).end();
+            }
+        }).catch(error => next(error));
+});
+
+app.post('/api/persons', (request, response, next) => {
     //const randId = Math.floor(Math.random() * 10000).toString(36);
     const person = request.body;
     if (!person) {
@@ -113,25 +128,26 @@ app.post('/api/persons', (request, response) => {
             error: "number missing"
         });
     }
-/* //// reimplement check later 
-
-    if (persons.some((p) => p.name == person.name)) {
-        return response.status(400).json({
-            error: "name must be unique"
-        });
-    }
-*/
-    const newPerson = new Person({
-        name: person.name,
-        number: person.number,
-    });
-   newPerson.save().then(result => {
-        console.log(`Added ${result.name} number ${result.number} to phonebook.`);
-        response.json(result);
-    }).catch(error => {
-        console.log('Error saving new phonebook entry: ',error);
-        response.status(500).end();
-    })    
+    Person.findOne({name:person.name}).then(result => {
+        if(result) {
+            // there was an entry with the same name
+            return response.status(409).json({
+                error: "name must be unique"
+            });
+        } else {
+            const newPerson = new Person({
+                name: person.name,
+                number: person.number,
+            });
+            newPerson.save().then(result => {
+                console.log(`Added ${result.name} number ${result.number} to phonebook.`);
+                response.json(result);
+            }).catch(error => {
+                console.log('Error saving new phonebook entry: ', error);
+                response.status(500).end();
+            })    
+        }
+    }).catch(error => next(error));
     
 })
 
