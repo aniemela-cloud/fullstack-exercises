@@ -1,10 +1,11 @@
+require('dotenv').config()
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
 
-
-
+const Person = require('./models/person');
+/*
 let persons = [
     {
         "id": "1",
@@ -27,7 +28,7 @@ let persons = [
         "number": "39-23-6423122"
     }
 ];
-
+*/
 morgan.token('rq-body', (req, res) => {
     return JSON.stringify(req.body)
 });
@@ -55,22 +56,26 @@ app.get('/info', (request, response) => {
 
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(result => {
+        response.json(result);
+    });
+    //response.json(persons)
 });
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id;
-    const person = persons.find(person => person.id === id);
-    if (person) {
-        response.json(person);
-    } else {
-        response.status(404).end();
-    }
+    Person.findById(request.params.id).then(person => {
+        if (person) {
+            response.json(person);
+        } else {
+            response.status(404).end();
+        }        
+    })
 });
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id;
-    const idx = persons.findIndex((person) => person.id === id);
+// remove reference to 'persons' object as part of MongoDBifying
+    const idx = -1 //persons.findIndex((person) => person.id === id);
     if (idx === -1) {
         response.status(404).end();
     } else {
@@ -80,8 +85,8 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-    const randId = Math.floor(Math.random() * 10000).toString(36);
-    let person = request.body;
+    //const randId = Math.floor(Math.random() * 10000).toString(36);
+    const person = request.body;
     if (!person) {
         return response.status(400).json({
             error: "empty request body"
@@ -102,18 +107,26 @@ app.post('/api/persons', (request, response) => {
             error: "number missing"
         });
     }
+/* //// reimplement check later 
+
     if (persons.some((p) => p.name == person.name)) {
         return response.status(400).json({
             error: "name must be unique"
         });
     }
-    person = {
+*/
+    const newPerson = new Person({
         name: person.name,
         number: person.number,
-        id: randId
-    }
-    persons.push(person);
-    response.json(person);
+    });
+   newPerson.save().then(result => {
+        console.log(`Added ${result.name} number ${result.number} to phonebook.`);
+        response.json(result);
+    }).catch(error => {
+        console.log('Error saving new phonebook entry: ',error);
+        response.status(500).end()
+    })    
+    
 })
 
 

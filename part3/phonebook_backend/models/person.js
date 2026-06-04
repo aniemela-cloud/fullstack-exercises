@@ -1,22 +1,33 @@
 const mongoose = require('mongoose');
 
-if (process.argv.length < 3 || process.argv.length == 4) {
-    console.log('Usage: node mongo.js <password> [<name> <number>]');
-} 
+const connectionUrl = process.env.MONGODB_URI;
 
-let mongoPassword = process.argv[2];
-if (mongoPassword === '-') {
-    mongoPassword = process.env.MONGO_ATLAS_PASSWORD;
-}
-const connectionUrl = `mongodb+srv://aniemela_db_user:${mongoPassword}@fullstack-c.7rpffbo.mongodb.net/phonebookApp?appName=fullstack-c`;
-mongoose.connect(connectionUrl, { family: 4 });
+console.log('connecting to', connectionUrl);
+
+mongoose.connect(connectionUrl, { family: 4 })
+.then(result => {
+    console.log('connected to MongoDB');
+}).catch(error => {
+    console.log('error connecting to MongoDB:', error.message);
+});
+
 mongoose.set('strictQuery', false);
 
 const phonebookSchema = new mongoose.Schema({
     name: String,
     number: String,  
 });
-const Entry = mongoose.model('Person', phonebookSchema);
+
+phonebookSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString();
+        delete returnedObject._id;
+        delete returnedObject.__v;
+    }
+});
+
+module.exports = mongoose.model('Person', phonebookSchema);
+/*
 if (process.argv.length >= 5) {
     const entryName = process.argv[3];
     const entryNumber = process.argv[4];
@@ -41,3 +52,4 @@ if (process.argv.length >= 5) {
     }).finally(() => mongoose.connection.close());
 
 }
+    */
