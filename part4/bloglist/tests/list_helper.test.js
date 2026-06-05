@@ -70,7 +70,7 @@ test('dummy returns one', () => {
     const result = listHelper.dummy(blogs)
     assert.strictEqual(result, 1)
 })
-describe('total likes', () => {
+describe('total likes of all blogs', () => {
     test('null argument has 0 likes', () => {
         const result=listHelper.totalLikes()
         assert.strictEqual(result, 0)
@@ -105,7 +105,7 @@ describe('favorite blog', () => {
     })
 })
 
-describe('favorite blog', () => {
+describe('most blogs by author', () => {
     test('null argument gives null return', () => {
         const result=listHelper.mostBlogs()
         assert.strictEqual(result, null)
@@ -122,6 +122,24 @@ describe('favorite blog', () => {
         const result=listHelper.mostBlogs(blogs)
         assert.partialDeepStrictEqual(result, {author: "Robert C. Martin", blogs: 3})
     })
+})
 
+describe('author with most likes', () => {
+    test('null argument gives null return', () => {
+        const result=listHelper.mostLikes()
+        assert.strictEqual(result, null)
+    })
+    test('empty array gives null return', () => {
+        const result=listHelper.mostLikes([])
+        assert.strictEqual(result, null)
+    })
+    test('list with one entry gives the author of the only entry', () => {
+        const result=listHelper.mostLikes(listWithOneBlog)
+        assert.partialDeepStrictEqual(result, {author: 'Edsger W. Dijkstra', likes: 5})
+    })
+    test('list with multiple entries', () => {
+        const result=listHelper.mostLikes(blogs)
+        assert.partialDeepStrictEqual(result, {author: 'Edsger W. Dijkstra', likes: 17})
+    })
 
 })
