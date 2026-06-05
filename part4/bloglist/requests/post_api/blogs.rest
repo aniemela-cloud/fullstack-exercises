@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "Esimerkkiblogi 2",
+    "author": "Erkki Esimerkki",
+    "url": "https://examp.le.doesnotexist/foobar",
+    "likes": 69
+}
