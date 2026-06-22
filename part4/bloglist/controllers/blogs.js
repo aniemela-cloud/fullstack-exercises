@@ -38,7 +38,13 @@ blogRouter.post('/', (request, response) => {
       error: 'url field missing'
     })
   }
-  const blog = new Blog(blogpost_data)
+  const blog = new Blog(
+    {
+      author: blogpost_data.author,
+      title: blogpost_data.title,
+      url: blogpost_data.url
+    }
+  )
 
   blog.save().then((result) => {
     response.status(201).json(result)
