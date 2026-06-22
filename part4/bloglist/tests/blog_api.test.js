@@ -123,7 +123,8 @@ describe('api/blogs POST endpoint', () => {
         const post_good = {
             title: "Post With All Fields",
             author: "Example Author",
-            url: "http://this.is.an.url.com/foo/bar"
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
         }  
         await api
             .post('/api/blogs')
@@ -135,7 +136,8 @@ describe('api/blogs POST endpoint', () => {
         const post_good = {
             title: "Post With All Fields",
             author: "Example Author",
-            url: "http://this.is.an.url.com/foo/bar"
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
         }  
         await api
             .post('/api/blogs')
@@ -143,11 +145,24 @@ describe('api/blogs POST endpoint', () => {
             .expect(201)
             .expect('Content-Type', /application\/json/)
     })
+    test("Missing 'likes' field defaults to 0", async () => {
+        const post_good = {
+            title: "Post With All Fields",
+            author: "Example Author",
+            url: "http://this.is.an.url.com/foo/bar",
+        }  
+        const post_result = await api
+            .post('/api/blogs')
+            .send(post_good)
+        assert.strictEqual(post_result.body.likes, 0)
+    })
+
     test('succesful POST increases number of GET results by one', async () => {
         const post_good = {
             title: "Post With All Fields",
             author: "Example Author",
-            url: "http://this.is.an.url.com/foo/bar"
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
         }  
         const pre_results = await api.get('/api/blogs')
         await api
@@ -162,7 +177,8 @@ describe('api/blogs POST endpoint', () => {
         const post_good = {
             title: "Post With All Fields",
             author: "Example Author",
-            url: "http://this.is.an.url.com/foo/bar"
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
         }  
         const post_result = await api
             .post('/api/blogs')
@@ -173,7 +189,8 @@ describe('api/blogs POST endpoint', () => {
         const post_good = {
             title: "Post With All Fields",
             author: "Example Author",
-            url: "http://this.is.an.url.com/foo/bar"
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
         }  
         const post_result = await api
             .post('/api/blogs')

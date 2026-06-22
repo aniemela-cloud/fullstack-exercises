@@ -42,7 +42,8 @@ blogRouter.post('/', (request, response) => {
     {
       author: blogpost_data.author,
       title: blogpost_data.title,
-      url: blogpost_data.url
+      url: blogpost_data.url,
+      likes: blogpost_data.likes ? blogpost_data.likes : 0
     }
   )
 
