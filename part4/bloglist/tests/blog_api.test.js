@@ -77,6 +77,13 @@ describe('api/blogs GET endpoint', () => {
 
         assert.strictEqual(response.body.length, blogs_testdata.length)
     })
+    test("unique identifier of blog posts is named 'id'", async () => {
+        const response = await api.get('/api/blogs')
+        assert.ok(response.body[0].id, "First result does not have a non-false 'id' field")
+        const byIdResponse = await api.get(`/api/blogs/${response.body[0].id}`)
+        assert.strictEqual(response.body[0].id, byIdResponse.body.id, 
+            "Searching by 'id' of the first found result did not give result with same 'id'")
+    })
 })
 after(async () => {
   await mongoose.connection.close()
