@@ -11,7 +11,7 @@ blogRouter.get('/:id', async (request, response) => {
   response.json(blogpost)
 })
 
-blogRouter.post('/', (request, response) => {
+blogRouter.post('/', async (request, response) => {
   const blogpost_data = request.body
   if (!blogpost_data) {
     return response.status(400).json({
@@ -47,9 +47,18 @@ blogRouter.post('/', (request, response) => {
     }
   )
 
-  blog.save().then((result) => {
+  const result = await blog.save()
+  return response.status(201).json(result)
+/*  blog.save().then((result) => {
     response.status(201).json(result)
+  }) */
+})
+
+blogRouter.delete('/:id', async (request, response) => {
+  return response.status(404).json({
+    error: 'unknown id'
   })
 })
+
 
 module.exports = blogRouter
