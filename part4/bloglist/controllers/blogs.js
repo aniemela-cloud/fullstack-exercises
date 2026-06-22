@@ -7,8 +7,18 @@ blogRouter.get('/', async (request, response) => {
 })
 
 blogRouter.get('/:id', async (request, response) => {
-  const blogpost = await Blog.findById(request.params.id)
-  response.json(blogpost)
+  let blogpost=null
+  try { 
+    blogpost = await Blog.findById(request.params.id) 
+  } catch (err) {
+    return response.status(404).end()
+  }
+  if(!blogpost) {
+    return response.status(404).end()
+  }
+  else {
+    return response.json(blogpost)
+  }
 })
 
 blogRouter.post('/', async (request, response) => {
@@ -55,9 +65,22 @@ blogRouter.post('/', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response) => {
-  return response.status(404).json({
-    error: 'unknown id'
-  })
+  let result=null
+  try {
+    result = await Blog.findByIdAndDelete(request.params.id)
+  } catch (err) {
+    return response.status(404).json({
+      error: err.message
+    })
+  }
+  if (result) {
+    return response.status(204).end()
+  }
+  else {
+    return response.status(404).json({
+      error: 'unknown id'
+    })
+  }
 })
 
 

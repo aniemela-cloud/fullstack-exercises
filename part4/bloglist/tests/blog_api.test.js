@@ -84,6 +84,11 @@ describe('api/blogs GET endpoint', () => {
         assert.strictEqual(byIdResponse.body.id, response.body[0].id, 
             "Searching by 'id' of the first found result did not give result with same 'id'")
     })
+    test("GET with invalid ID fails with status 404", async () => {
+        await api
+        .get('/api/blogs/INVALID_ID_HERE')
+        .expect(404)
+    })
 })
 describe('api/blogs POST endpoint', () => {
     test('POST without author fails with status 400', async () => {
@@ -202,6 +207,50 @@ describe('api/blogs POST endpoint', () => {
 
 
 })
+describe('api/blogs DELETE endpoint', () => {
+    test('Attempting to delete with no id fails with status 404', async () => {
+        await api
+            .delete('/api/blogs/')
+            .expect(404)
+    })
+    test('Attempting to delete with invalid id fails with status 404', async () => {
+        await api
+            .delete('/api/blogs/INVALIDID_FOOBAR1')
+            .expect(404)
+    })
+    test('Attempting to delete with no id fails with status 404', async () => {
+        await api
+            .delete('/api/blogs/')
+            .expect(404)
+    })
+    test('Delete with a valid ID returns status 204', async () => {
+        const post_id = blogs_testdata[0]._id
+        await api
+            .delete(`/api/blogs/${post_id}`)
+            .expect(204)
+    })
+    test('Delete with a valid ID removes one post', async () => {
+        const post_id = blogs_testdata[0]._id
+        const pre_results = await api.get('/api/blogs')
+        await api
+            .delete(`/api/blogs/${post_id}`)
+            .expect(204)
+        const after_results = await api.get('/api/blogs')
+        assert.strictEqual(after_results.body.length, pre_results.body.length-1)
+    })
+    test('Deleted post no longer exists in database', async () => {
+        const post_id = blogs_testdata[0]._id
+        await api
+            .delete(`/api/blogs/${post_id}`)
+            .expect(204)
+        await api
+            .get(`/api/blogs/${post_id}`)
+            .expect(404)
+    })
+
+
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
