@@ -213,14 +213,14 @@ describe('api/blogs DELETE endpoint', () => {
             .delete('/api/blogs/')
             .expect(404)
     })
-    test('Attempting to delete with invalid id fails with status 404', async () => {
+    test('Attempting to delete with invalid id fails with status 400', async () => {
         await api
             .delete('/api/blogs/INVALIDID_FOOBAR1')
-            .expect(404)
+            .expect(400)
     })
-    test('Attempting to delete with no id fails with status 404', async () => {
+    test('Attempting to delete with valid but non-existing id fails with status 404', async () => {
         await api
-            .delete('/api/blogs/')
+            .delete('/api/blogs/004200a71b54a676234d17fb')
             .expect(404)
     })
     test('Delete with a valid ID returns status 204', async () => {
