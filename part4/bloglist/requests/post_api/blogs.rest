@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "Esimerkkiblogi 2",
+    "title": "Esimerkkiblogi 3 USERMODE",
     "author": "Erkki Esimerkki",
     "url": "https://examp.le.doesnotexist/foobar",
-    "likes": 69
+    "likes": 11
 }

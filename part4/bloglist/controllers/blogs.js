@@ -1,8 +1,10 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const logger = require('../utils/logger')
 
 blogRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', {username: 1, name: 1, _id: 1})
   response.json(blogs)
 })
 
@@ -43,16 +45,26 @@ blogRouter.post('/', async (request, response) => {
       error: 'url field missing'
     })
   }
+  const users = await User.find({})
+  let user = undefined
+  if (users && users.length && users.length > 0) {
+    user = users[0]
+  }
   const blog = new Blog(
     {
       author: blogpost_data.author,
       title: blogpost_data.title,
       url: blogpost_data.url,
-      likes: blogpost_data.likes ? blogpost_data.likes : 0
+      likes: blogpost_data.likes ? blogpost_data.likes : 0,
+      user: user ? user._id : undefined
     }
   )
-
   const result = await blog.save()
+  if (!user.blogs) {
+    user.blogs = []
+  }
+  user.blogs = user.blogs.concat(blog._id)
+  await user.save()
   return response.status(201).json(result)
   /*  blog.save().then((result) => {
       response.status(201).json(result)

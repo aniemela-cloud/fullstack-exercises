@@ -1,5 +1,6 @@
 const userRouter = require('express').Router()
 const User = require('../models/user')
+const Blog = require('../models/blog')
 const bcrypt = require('bcrypt')
 
 userRouter.post('/', async (request, response) => {
@@ -48,7 +49,15 @@ userRouter.post('/', async (request, response) => {
     response.status(201).json(savedUser)
 })
 userRouter.get('/', async (request, response) => {
-    const users = await User.find({})
+    const users = await User.find({}).populate('blogs', 
+        { author: 1, title: 1, url: 1, likes: 1, _id: 1})
+/*    for (let i = 0; i < users.length; i++) {
+        let user = users[i]
+        const blogs = await Blog.find({ user: user._id })
+        console.log('user id', user._id, 'blogs', blogs)
+        user.blogs = blogs
+    }
+    console.log('after loop, users array is:',users) */
     response.json(users)
 })
 
