@@ -29,24 +29,13 @@ userRouter.post('/', async (request, response) => {
     }
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(password, saltRounds)
-    try {
-        const user = new User({
-            username,
-            name,
-            passwordHash
-        })
-        const savedUser = await user.save()
-        response.status(201).json(savedUser)
-    } catch(err) {
-        if (err.name === 'MongoServerError' && err.message.includes('E11000 duplicate key error')) {
-            return response.status(400).json({ error: 'expected `username` to be unique' })
-        }
-        else {
-            return response.status(400).json({
-                error: err.message
-            })
-        }
-    }
+    const user = new User({
+        username,
+        name,
+        passwordHash
+    })
+    const savedUser = await user.save()
+    response.status(201).json(savedUser)
 })
 userRouter.get('/', async (request, response) => {
     const users = await User.find({})
