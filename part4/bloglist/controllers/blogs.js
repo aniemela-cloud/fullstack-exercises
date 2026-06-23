@@ -83,5 +83,23 @@ blogRouter.delete('/:id', async (request, response) => {
   }
 })
 
+blogRouter.put('/:id', async (request, response) => {
+  let result = null
+  // could verify that 'likes' exists in the request.body
+  try {
+    result = await Blog.findByIdAndUpdate(request.params.id,
+      {likes: request.body.likes},
+      {returnDocument: 'after'})
+  } catch (err) {
+    return response.status(404).end()
+  }
+  if (!result) {
+    return response.status(404).end()
+  }
+  else {
+    return response.json(result)
+  }
+})
+
 
 module.exports = blogRouter
