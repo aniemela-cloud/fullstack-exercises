@@ -60,6 +60,33 @@ describe('api/users POST endpoint with one extant user', () => {
         assert.ok(post_result.body.id, 'No property \'id\' found in returned data')
     })
 
+    test('attempting to add a user with a username shorter than 3 characters results in status 400', {todo: true}, async () => {
+        const user_data = {
+            username : 'ne',
+            name: 'New Userperson',
+            password: 'drowssap'
+        }
+        const post_result = await api
+            .post('/api/users')
+            .send(user_data)
+            .expect(400)
+        assert.match(post_result.body.error, /username too short/)            
+    })
+    test('attempting to add a user with a password shorter than 3 characters results in status 400', {todo: true}, async () => {
+        const user_data = {
+            username : 'newuser',
+            name: 'New Userperson',
+            password: 'dr'
+        }
+        const post_result = await api
+            .post('/api/users')
+            .send(user_data)
+            .expect(400)
+        assert.match(post_result.body.error, /password too short/)
+    })
+
+
+
 })
 
 after(async () => {
