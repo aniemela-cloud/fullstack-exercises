@@ -247,6 +247,85 @@ describe('api/blogs DELETE endpoint', () => {
             .get(`/api/blogs/${post_id}`)
             .expect(404)
     })
+})
+describe('api/blogs PATCH endpoint', () => {
+    test('Attempting to patch with no id fails with status 404', async () => {
+        await api
+            .patch(`/api/blogs/`)
+            .expect(404)
+    })
+    test('Attempting to patch with incorrect id fails with status 404', async () => {
+        await api
+            .patch(`/api/blogs/INVALID_ID`)
+            .expect(404)
+    })
+    test('Attempting to patch with valid id but no data fails with status 404', async () => {
+        const post_id = blogs_testdata[0]._id
+        await api
+            .patch(`/api/blogs/${post_id}`)
+            .send({})
+            .expect(404)
+    })
+    test('Attempting to patch with valid id but only invalid data fails with status 404', async () => {
+        const post_id = blogs_testdata[0]._id
+        await api
+            .patch(`/api/blogs/${post_id}`)
+            .send({ invalid: 'data' })
+            .expect(404)
+    })
+    test('Attempting to patch with valid id and data results in status 200', async () => {
+        const post_good = {
+            title: "Post With All Fields",
+            author: "Example Author",
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
+        }
+        const post_id = blogs_testdata[0]._id
+        await api
+            .patch(`/api/blogs/${post_id}`)
+            .send(post_good)
+            .expect(200)
+
+    })
+    test('Attempting to patch with valid id and data returns JSON', async () => {
+        const post_good = {
+            title: "Post With All Fields",
+            author: "Example Author",
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
+        }
+        const post_id = blogs_testdata[0]._id
+        await api
+            .patch(`/api/blogs/${post_id}`)
+            .send(post_good)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+    })
+    test('All data fields except ID can be updated through the patch endpoint', async () => {
+        const post_good = {
+            title: "Post With All Fields",
+            author: "Example Author",
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
+        }
+        const post_id = blogs_testdata[0]._id
+        const patch_result = await api.patch(`/api/blogs/${post_id}`).send(post_good)
+        assert.partialDeepStrictEqual(patch_result.body, post_good)
+    })
+    test('ID can not be be updated through the patch endpoint', async () => {
+        const post_good = {
+            title: "Post With All Fields",
+            author: "Example Author",
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0,
+            id: "5a422b891b54a676234dffff"
+        }
+        const post_id = blogs_testdata[0]._id
+        const patch_result = await api.patch(`/api/blogs/${post_id}`).send(post_good)
+        assert.notStrictEqual(patch_result.body.id, post_good.id)
+    })
+
 
 
 })

@@ -83,16 +83,37 @@ blogRouter.delete('/:id', async (request, response) => {
   }
 })
 
-blogRouter.put('/:id', async (request, response) => {
+blogRouter.patch('/:id', async (request, response) => {
   let result = null
-  // could verify that 'likes' exists in the request.body
-  try {
-    result = await Blog.findByIdAndUpdate(request.params.id,
-      {likes: request.body.likes},
-      {returnDocument: 'after'})
-  } catch (err) {
-    return response.status(404).end()
+  let new_data = {}
+  if(request && request.body) {
+    if (request.body.likes || request.body.likes === 0) {
+      new_data.likes = request.body.likes
+    }
+    if (request.body.author) {
+      new_data.author = request.body.author
+    }
+    if (request.body.title) {
+      new_data.title = request.body.title
+    }
+    if (request.body.url) {
+      new_data.url = request.body.url
+    }
   }
+  if (Object.keys(new_data).length > 0) {
+    try {
+      result = await Blog.findByIdAndUpdate(request.params.id,
+        new_data,
+        { returnDocument: 'after' })
+      console.log('await findByIdAndUpdate passed')
+    } catch (err) {
+      console.log('error caught: ', err)
+      return response.status(404).json({
+        error: err.message
+      })
+    }
+  }
+  // this will also catch the case where no useful data was passed in the request
   if (!result) {
     return response.status(404).end()
   }
