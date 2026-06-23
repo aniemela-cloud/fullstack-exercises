@@ -7,13 +7,13 @@ blogRouter.get('/', async (request, response) => {
 })
 
 blogRouter.get('/:id', async (request, response) => {
-  let blogpost=null
-  try { 
-    blogpost = await Blog.findById(request.params.id) 
+  let blogpost = null
+  try {
+    blogpost = await Blog.findById(request.params.id)
   } catch (err) {
     return response.status(404).end()
   }
-  if(!blogpost) {
+  if (!blogpost) {
     return response.status(404).end()
   }
   else {
@@ -59,13 +59,13 @@ blogRouter.post('/', async (request, response) => {
 
   const result = await blog.save()
   return response.status(201).json(result)
-/*  blog.save().then((result) => {
-    response.status(201).json(result)
-  }) */
+  /*  blog.save().then((result) => {
+      response.status(201).json(result)
+    }) */
 })
 
 blogRouter.delete('/:id', async (request, response) => {
-  let result=null
+  let result = null
   try {
     result = await Blog.findByIdAndDelete(request.params.id)
   } catch (err) {
@@ -86,7 +86,7 @@ blogRouter.delete('/:id', async (request, response) => {
 blogRouter.patch('/:id', async (request, response) => {
   let result = null
   let new_data = {}
-  if(request && request.body) {
+  if (request && request.body) {
     if (request.body.likes || request.body.likes === 0) {
       new_data.likes = request.body.likes
     }
