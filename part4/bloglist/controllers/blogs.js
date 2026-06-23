@@ -7,12 +7,7 @@ blogRouter.get('/', async (request, response) => {
 })
 
 blogRouter.get('/:id', async (request, response) => {
-  let blogpost = null
-  try {
-    blogpost = await Blog.findById(request.params.id)
-  } catch (err) {
-    return response.status(404).end()
-  }
+  const blogpost = await Blog.findById(request.params.id)
   if (!blogpost) {
     return response.status(404).end()
   }
@@ -65,8 +60,7 @@ blogRouter.post('/', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response) => {
-  let result = null
-  result = await Blog.findByIdAndDelete(request.params.id)
+  const result = await Blog.findByIdAndDelete(request.params.id)
   if (result) {
     return response.status(204).end()
   }
@@ -95,17 +89,9 @@ blogRouter.patch('/:id', async (request, response) => {
     }
   }
   if (Object.keys(new_data).length > 0) {
-    try {
-      result = await Blog.findByIdAndUpdate(request.params.id,
-        new_data,
-        { returnDocument: 'after' })
-      console.log('await findByIdAndUpdate passed')
-    } catch (err) {
-      console.log('error caught: ', err)
-      return response.status(404).json({
-        error: err.message
-      })
-    }
+    result = await Blog.findByIdAndUpdate(request.params.id,
+      new_data,
+      { returnDocument: 'after' })
   }
   // this will also catch the case where no useful data was passed in the request
   if (!result) {

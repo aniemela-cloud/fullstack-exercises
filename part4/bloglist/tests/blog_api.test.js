@@ -57,6 +57,9 @@ const blogs_testdata = [
     }
 ]
 
+const valid_unused_id = "004200a71b54a676234d17fb"
+
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     //console.log('cleared database')
@@ -84,11 +87,17 @@ describe('api/blogs GET endpoint', () => {
         assert.strictEqual(byIdResponse.body.id, response.body[0].id, 
             "Searching by 'id' of the first found result did not give result with same 'id'")
     })
-    test("GET with invalid ID fails with status 404", async () => {
+    test("GET with invalid ID fails with status 400", async () => {
         await api
         .get('/api/blogs/INVALID_ID_HERE')
+        .expect(400)
+    })
+    test("GET with valid but non-existing ID fails with status 404", async () => {
+        await api
+        .get(`/api/blogs/${valid_unused_id}`)
         .expect(404)
     })
+
 })
 describe('api/blogs POST endpoint', () => {
     test('POST without author fails with status 400', async () => {
@@ -220,7 +229,7 @@ describe('api/blogs DELETE endpoint', () => {
     })
     test('Attempting to delete with valid but non-existing id fails with status 404', async () => {
         await api
-            .delete('/api/blogs/004200a71b54a676234d17fb')
+            .delete(`/api/blogs/${valid_unused_id}`)
             .expect(404)
     })
     test('Delete with a valid ID returns status 204', async () => {
