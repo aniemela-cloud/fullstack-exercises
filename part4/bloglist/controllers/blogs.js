@@ -1,4 +1,5 @@
 const blogRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const logger = require('../utils/logger')
@@ -20,6 +21,23 @@ blogRouter.get('/:id', async (request, response) => {
 
 blogRouter.post('/', async (request, response) => {
   const blogpost_data = request.body
+  if(!request.token) {
+    return response.status(401).json({
+      error: 'you must be logged in to post'
+    })
+  }
+  decodedToken = jwt.verify(request.token, process.env.TOKEN_SECRET)
+  if(!decodedToken || !decodedToken.id) {
+    return response.status(401).json({
+      error: 'invalid token'
+    })
+  }
+  const user = await User.findById(decodedToken.id)
+  if(!user) {
+    return response.status(400).json({
+      error: 'user ID missing or not valid'
+    })
+  }
   if (!blogpost_data) {
     return response.status(400).json({
       error: 'empty request body'
@@ -45,18 +63,13 @@ blogRouter.post('/', async (request, response) => {
       error: 'url field missing'
     })
   }
-  const users = await User.find({})
-  let user = undefined
-  if (users && users.length && users.length > 0) {
-    user = users[0]
-  }
   const blog = new Blog(
     {
       author: blogpost_data.author,
       title: blogpost_data.title,
       url: blogpost_data.url,
       likes: blogpost_data.likes ? blogpost_data.likes : 0,
-      user: user ? user._id : undefined
+      user: user._id
     }
   )
   const result = await blog.save()

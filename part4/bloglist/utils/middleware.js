@@ -25,4 +25,13 @@ const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
 
-module.exports = { mongoErrorHandler, unknownEndpoint }
+const tokenExtractor = (request, response, next) => {
+    const authCookie = request.get('authorization')
+    if (authCookie && authCookie.startsWith('Bearer ')) {
+        request.token = authCookie.replace('Bearer ','')
+        logger.info('tokenExtractor found token', request.token)
+    }
+    next()
+}
+
+module.exports = { mongoErrorHandler, unknownEndpoint, tokenExtractor }
