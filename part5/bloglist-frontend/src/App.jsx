@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import NewBlog from './components/NewBlog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -8,6 +9,10 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
+  const [newAuthor, setAuthor] = useState('')
+  const [newTitle, setTitle] = useState('')
+  const [newUrl, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -20,6 +25,7 @@ const App = () => {
     if (storedUserJSON) {
       const user = JSON.parse(storedUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -31,6 +37,7 @@ const App = () => {
         'currentBlogUser', JSON.stringify(user)
       )
       setUser(user)
+      blogService.setToken(user.token)
       setUsername('')
       setPassword('')
     } catch(error) {
@@ -43,6 +50,17 @@ const App = () => {
     event.preventDefault()
     setUser(null)
     window.localStorage.removeItem('currentBlogUser')
+  }
+
+  const handleNewBlog = async (event) => {
+    event.preventDefault()
+    console.log(newAuthor, newTitle, newUrl)
+    const blogdata = await blogService.create({author:newAuthor, title:newTitle, url: newUrl})
+    console.log(blogdata)
+    setBlogs(blogs.concat(blogdata))
+    setAuthor('')
+    setTitle('')
+    setUrl('')
   }
 
   const loginForm = () => (
@@ -89,6 +107,17 @@ const App = () => {
       {user && (
         <div>
           <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+          <div>
+            <NewBlog 
+              onSubmit={handleNewBlog}
+              newAuthor={newAuthor}
+              newTitle={newTitle}
+              newUrl={newUrl}
+              onAuthorChange={({target}) => setAuthor(target.value)}
+              onTitleChange={({target}) => setTitle(target.value)}
+              onUrlChange={({target}) => setUrl(target.value)}
+            />
+          </div>
           {blogList()}
         </div>
         )}
