@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const logger = require('../utils/logger')
+const { userExtractor } = require('../utils/middleware')
 
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', {username: 1, name: 1, _id: 1})
@@ -19,23 +20,12 @@ blogRouter.get('/:id', async (request, response) => {
   }
 })
 
-blogRouter.post('/', async (request, response) => {
+blogRouter.post('/', userExtractor, async (request, response) => {
   const blogpost_data = request.body
-  if(!request.token) {
+  const user = request.user
+  if(!user) {
     return response.status(401).json({
       error: 'you must be logged in to post'
-    })
-  }
-  decodedToken = jwt.verify(request.token, process.env.TOKEN_SECRET)
-  if(!decodedToken || !decodedToken.id) {
-    return response.status(401).json({
-      error: 'invalid token'
-    })
-  }
-  const user = await User.findById(decodedToken.id)
-  if(!user) {
-    return response.status(400).json({
-      error: 'user ID missing or not valid'
     })
   }
   if (!blogpost_data) {
@@ -84,7 +74,13 @@ blogRouter.post('/', async (request, response) => {
     }) */
 })
 
-blogRouter.delete('/:id', async (request, response) => {
+blogRouter.delete('/:id', userExtractor, async (request, response) => {
+  const user = request.user
+  if(!user) {
+    return response.status(401).json({
+      error: 'you must be logged in to post'
+    })
+  }
   const result = await Blog.findByIdAndDelete(request.params.id)
   if (result) {
     return response.status(204).end()

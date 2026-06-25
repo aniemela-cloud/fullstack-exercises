@@ -28,8 +28,8 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWQiOiI2YTNhODQ4ZTExOGE0NTkyNjM3ZTRlNWIiLCJpYXQiOjE3ODIzODY1NDN9.mxb43hX05wE-A3IGnelcNMjTT5nDkV-CCfS-dHUJboM
 
 {
-    "title": "Esimerkkiblogi 4 Now With Auth Token",
+    "title": "Esimerkkiblogi 5 Now With Auth Token and MiddleWare",
     "author": "Erkki Esimerkki",
     "url": "https://examp.le.doesnotexist/foobar",
-    "likes": 69
+    "likes": 699
 }
