@@ -1,9 +1,10 @@
 const logger = require('./logger')
+const config = require('./config')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 const mongoErrorHandler = (error, request, response, next) => {
-    logger.error(error.message)
+    logger.error('mongoErrorHandler handling:',error.message)
     if (error.name == 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
     } else if (error.name == 'ValidationError') {
@@ -31,14 +32,13 @@ const tokenExtractor = (request, response, next) => {
     const authCookie = request.get('authorization')
     if (authCookie && authCookie.startsWith('Bearer ')) {
         request.token = authCookie.replace('Bearer ','')
-        logger.info('tokenExtractor found token', request.token)
     }
     next()
 }
 
 const userExtractor = async (request, response, next) => {
     if (request.token) {
-        decodedToken = jwt.verify(request.token, process.env.TOKEN_SECRET)
+        decodedToken = jwt.verify(request.token, config.TOKEN_SECRET)
         if (!decodedToken || !decodedToken.id) {
             return response.status(401).json({
                 error: 'invalid token'

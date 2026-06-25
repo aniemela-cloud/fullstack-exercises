@@ -1,9 +1,10 @@
-const { test, after, beforeEach, describe } = require('node:test')
+const { test, before, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 const blogs_testdata = [
@@ -37,6 +38,7 @@ const blogs_testdata = [
         author: "Robert C. Martin",
         url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
         likes: 10,
+        user: "6a3a848e118a4592637e4e5b",
         __v: 0
     },
     {
@@ -45,6 +47,7 @@ const blogs_testdata = [
         author: "Robert C. Martin",
         url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
         likes: 0,
+        user: "6a3a848e118a4592637e4e5b",
         __v: 0
     },
     {
@@ -53,12 +56,34 @@ const blogs_testdata = [
         author: "Robert C. Martin",
         url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
         likes: 2,
+        user: "6a3a848e118a4592637e4e5b",
         __v: 0
     }
 ]
 
 const valid_unused_id = "004200a71b54a676234d17fb"
 
+const test_auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWQiOiI2YTNhODQ4ZTExOGE0NTkyNjM3ZTRlNWIiLCJpYXQiOjE3ODIzOTQ5MjB9.GsAs50v1Zl03ubGUMz_7jw8gA_0rm0CwQvIGCgi2rgw"
+const test_user_data = {
+    _id: "6a3a848e118a4592637e4e5b",
+    username: "testuser",
+    name: "Test User",
+    passwordHash: "$2b$10$2EszMJc5tiKCTZqPVtatCu.gA/FUEHxZqcUnemHqM.KCa/0JGolsC",
+    blogs: [
+        "5a422b891b54a676234d17fa",
+        "5a422ba71b54a676234d17fb",
+        "5a422bc61b54a676234d17fc"
+    ]
+}
+
+
+const resetUserData = async () => {
+    await User.deleteMany({})
+    const user = new User(test_user_data)
+    await user.save()
+}
+// set up the user database for this test suite
+before(resetUserData)
 
 beforeEach(async () => {
     await Blog.deleteMany({})
@@ -100,35 +125,64 @@ describe('api/blogs GET endpoint', () => {
 
 })
 describe('api/blogs POST endpoint', () => {
-    test('POST without author fails with status 400', async () => {
+    test('POST with no authorization field set fails with status 401', async () => {
+        const post_good = {
+            title: "Post With All Fields",
+            author: "Example Author",
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
+        }  
+        await api
+            .post('/api/blogs')
+            .send(post_good)
+            .expect(401)
+    })
+    test('POST with invalid authorization token fails with status 401', async () => {
+        const post_good = {
+            title: "Post With All Fields",
+            author: "Example Author",
+            url: "http://this.is.an.url.com/foo/bar",
+            likes: 0
+        }  
+        await api
+            .post('/api/blogs')
+            .set('Authorization', `Bearer FOO_BAR_ASD_${test_auth_token}`)
+            .send(post_good)
+            .expect(401)
+    })
+
+    test('POST without \'author\' fails with status 400', async () => {
         const post_no_author = {
             title: "Authorless Post",
             url: "http://example.url.com/foo/bar",
         }
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .send(post_no_author)
             .expect(400)
     })
 
-    test('POST without title fails with status 400', async () => {
+    test('POST without \'title\' fails with status 400', async () => {
         const post_no_title = {
             author: "Author Notitle",
             url: "http://example.url.com/foo/bar",
         }
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .send(post_no_title)
             .expect(400)
     })
 
-    test('POST without URL fails with status 400', async () => {
+    test('POST without \'url\' fails with status 400', async () => {
         const post_no_url = {
             title: "Post With No Url",
             author: "Example Author",
         }  
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .send(post_no_url)
             .expect(400)
     })
@@ -142,6 +196,7 @@ describe('api/blogs POST endpoint', () => {
         }  
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .send(post_good)
             .expect(201)
         
@@ -155,6 +210,7 @@ describe('api/blogs POST endpoint', () => {
         }  
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .send(post_good)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -167,6 +223,7 @@ describe('api/blogs POST endpoint', () => {
         }  
         const post_result = await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .send(post_good)
         assert.strictEqual(post_result.body.likes, 0)
     })
@@ -182,6 +239,7 @@ describe('api/blogs POST endpoint', () => {
         await api
             .post('/api/blogs')
             .send(post_good)
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .expect(201)
             .expect('Content-Type', /application\/json/)
         const after_results = await api.get('/api/blogs')
@@ -196,6 +254,7 @@ describe('api/blogs POST endpoint', () => {
         }  
         const post_result = await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .send(post_good)
         assert.partialDeepStrictEqual(post_result.body, post_good)
     })
@@ -208,52 +267,61 @@ describe('api/blogs POST endpoint', () => {
         }  
         const post_result = await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .send(post_good)
         
         const get_result = await api.get(`/api/blogs/${post_result.body.id}`)
         assert.partialDeepStrictEqual(post_result.body, get_result.body)
     })
-
-
+    after(resetUserData)
 })
 describe('api/blogs DELETE endpoint', () => {
+    beforeEach(resetUserData)
+
     test('Attempting to delete with no id fails with status 404', async () => {
         await api
             .delete('/api/blogs/')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .expect(404)
     })
     test('Attempting to delete with invalid id fails with status 400', async () => {
         await api
             .delete('/api/blogs/INVALIDID_FOOBAR1')
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .expect(400)
     })
     test('Attempting to delete with valid but non-existing id fails with status 404', async () => {
         await api
             .delete(`/api/blogs/${valid_unused_id}`)
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .expect(404)
     })
     test('Delete with a valid ID returns status 204', async () => {
-        const post_id = blogs_testdata[0]._id
+        const post_id = blogs_testdata[4]._id
         await api
             .delete(`/api/blogs/${post_id}`)
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .expect(204)
     })
     test('Delete with a valid ID removes one post', async () => {
-        const post_id = blogs_testdata[0]._id
+        const post_id = blogs_testdata[4]._id
         const pre_results = await api.get('/api/blogs')
         await api
             .delete(`/api/blogs/${post_id}`)
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .expect(204)
         const after_results = await api.get('/api/blogs')
         assert.strictEqual(after_results.body.length, pre_results.body.length-1)
     })
     test('Deleted post no longer exists in database', async () => {
-        const post_id = blogs_testdata[0]._id
+        const post_id = blogs_testdata[4]._id
         await api
             .delete(`/api/blogs/${post_id}`)
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .expect(204)
         await api
             .get(`/api/blogs/${post_id}`)
+            .set('Authorization', `Bearer ${test_auth_token}`)
             .expect(404)
     })
 })

@@ -1,5 +1,11 @@
 const info = (...params) => {
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(...params)
+  }
+}
+
+const debug = (...params) => {
+  if (process.env.NODE_ENV === 'development') {
     console.log(...params)
   }
 }

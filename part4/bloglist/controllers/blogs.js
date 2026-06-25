@@ -5,6 +5,7 @@ const User = require('../models/user')
 const logger = require('../utils/logger')
 const { userExtractor } = require('../utils/middleware')
 
+
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', {username: 1, name: 1, _id: 1})
   response.json(blogs)
@@ -84,14 +85,13 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
   const post = await Blog.findById(request.params.id)
   if (post) {
     if (post.user.toString() === user._id.toString()) {
-      logger.info("post user ID matches user ID from token")
       // we now need to remove this post from the user object's
       // "blogs" array
       const filtered = user.blogs.filter((postId) => postId.toString() != post._id.toString())
-      logger.info('filtered list ', filtered)
       user.blogs = filtered
       await user.save()
       await post.deleteOne()
+      return response.status(204).end()
     }
     else {
       return response.status(401).json({
