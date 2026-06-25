@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
+  const [notifyMessage, setNotifyMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -41,6 +45,10 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch(error) {
+      setErrorMessage('Login failed. Check username/password.')
+      setTimeout(() => setErrorMessage(null), 5000)
+      setUsername('')
+      setPassword('')
       console.error('caught error ',error)
     }
     console.log('handleLogin called username:',username, 'password', password)
@@ -56,7 +64,9 @@ const App = () => {
     event.preventDefault()
     console.log(newAuthor, newTitle, newUrl)
     const blogdata = await blogService.create({author:newAuthor, title:newTitle, url: newUrl})
-    console.log(blogdata)
+//    console.log(blogdata)
+    setNotifyMessage(`${blogdata.title} by ${blogdata.author} added.`)
+    setTimeout(() => setNotifyMessage(null), 5000);
     setBlogs(blogs.concat(blogdata))
     setAuthor('')
     setTitle('')
@@ -103,6 +113,8 @@ const App = () => {
   )
   return (
     <div>
+      <Notification message={notifyMessage} className="notice" />
+      <Notification message={errorMessage} className="error" />
       {!user && loginForm()}
       {user && (
         <div>
