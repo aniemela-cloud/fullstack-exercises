@@ -15,10 +15,21 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const storedUserJSON = window.localStorage.getItem('currentBlogUser')
+    if (storedUserJSON) {
+      const user = JSON.parse(storedUserJSON)
+      setUser(user)
+    }
+  }, [])
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
       const user = await loginService.login({username, password})
+      window.localStorage.setItem(
+        'currentBlogUser', JSON.stringify(user)
+      )
       setUser(user)
       setUsername('')
       setPassword('')
@@ -26,6 +37,12 @@ const App = () => {
       console.error('caught error ',error)
     }
     console.log('handleLogin called username:',username, 'password', password)
+  }
+
+  const handleLogout = (event) => {
+    event.preventDefault()
+    setUser(null)
+    window.localStorage.removeItem('currentBlogUser')
   }
 
   const loginForm = () => (
@@ -68,8 +85,13 @@ const App = () => {
   )
   return (
     <div>
-      {(!user && loginForm())}
-      {(user && blogList())}
+      {!user && loginForm()}
+      {user && (
+        <div>
+          <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+          {blogList()}
+        </div>
+        )}
     </div>
   )
 }
