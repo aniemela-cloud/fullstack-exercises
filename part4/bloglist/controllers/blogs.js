@@ -78,18 +78,36 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
   const user = request.user
   if(!user) {
     return response.status(401).json({
-      error: 'you must be logged in to post'
+      error: 'you must be logged in to delete a post'
     })
   }
-  const result = await Blog.findByIdAndDelete(request.params.id)
-  if (result) {
-    return response.status(204).end()
+  const post = await Blog.findById(request.params.id)
+  if (post) {
+    if (post.user.toString() === user._id.toString()) {
+      logger.info("post user ID matches user ID from token")
+      // we now need to remove this post from the user object's
+      // "blogs" array
+      const filtered = user.blogs.filter((postId) => postId.toString() != post._id.toString())
+      logger.info('filtered list ', filtered)
+      user.blogs = filtered
+      await user.save()
+      await post.deleteOne()
+    }
+    else {
+      return response.status(401).json({
+        error: 'only the author may delete a post'
+      })
+    }
   }
   else {
     return response.status(404).json({
-      error: 'unknown id'
+      error: 'unknown post id'
     })
   }
+
+/*  if (result) {
+    return response.status(204).end()
+  } */
 })
 
 blogRouter.patch('/:id', async (request, response) => {
