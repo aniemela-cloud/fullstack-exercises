@@ -20,16 +20,16 @@ const Blog = ({ blog, updateLike }) => {
   const onLike = () => {
     blog.likes += 1
     setLikes(blog.likes)
-    updateLike({id: blog.id, likes: blog.likes})
+    updateLike({ id: blog.id, likes: blog.likes })
   }
 
   return (
     <div style={blogStyle}>
-      {blog.title} by {blog.author} 
-      <button 
+      {blog.title} by {blog.author}
+      <button
         name="show toggle"
         onClick={toggleVisibility}>
-           { visible ? 'hide' : 'show' } 
+        {visible ? 'hide' : 'show'}
       </button>
       <div style={showWhenVisible}>
         <div>URL: {blog.url}</div>

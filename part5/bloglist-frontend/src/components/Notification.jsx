@@ -1,12 +1,12 @@
-const Notification = ({message, className}) => {
-    if (message === null || message === undefined) {
-        return null
-    }
-    return (
-        <div className={className}>
-            {message}
-        </div>
-    )
+const Notification = ({ message, className }) => {
+  if (message === null || message === undefined) {
+    return null
+  }
+  return (
+    <div className={className}>
+      {message}
+    </div>
+  )
 }
 
 export default Notification

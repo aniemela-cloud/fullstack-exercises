@@ -43,4 +43,4 @@ const update = async (blogObject) => {
   return response.data
 }
 
-export default { getAll, create, setToken, update}
+export default { getAll, create, setToken, update }

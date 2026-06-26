@@ -7,8 +7,8 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [notifyMessage, setNotifyMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [notifyMessage, setNotifyMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
@@ -21,8 +21,8 @@ const App = () => {
     blogService.getAll().then(blogs => {
       blogs.sort((a,b) =>  b.likes - a.likes)
       setBlogs( blogs )
-      }
-    )  
+    }
+    )
   }, [])
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
       window.localStorage.setItem(
         'currentBlogUser', JSON.stringify(user)
       )
@@ -65,14 +65,14 @@ const App = () => {
     console.log('createBlog got newBlogData:',newBlogData)
     const blogdata = await blogService.create(newBlogData)
     setNotifyMessage(`${blogdata.title} by ${blogdata.author} added.`)
-    setTimeout(() => setNotifyMessage(null), 5000);
+    setTimeout(() => setNotifyMessage(null), 5000)
     setBlogs(blogs.concat(blogdata))
     newBlogTogglableRef.current.toggleVisibility()
   }
 
-  const updateLike = async ({id, likes}) => {
+  const updateLike = async ({ id, likes }) => {
     console.log('updating likes for',id,'to',likes)
-    await blogService.update({id, likes})
+    await blogService.update({ id, likes })
     const resortedBlogs = blogs.toSorted((a,b) => b.likes - a.likes)
     setBlogs(resortedBlogs)
   }
@@ -114,9 +114,9 @@ const App = () => {
   const blogList = () => (
     <div>
       <h2>blogs</h2>
-        {blogs.map(blog =>
+      {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} updateLike={updateLike}/>
-        )}
+      )}
     </div>
   )
   return (
@@ -134,7 +134,7 @@ const App = () => {
           </Togglable>
           {blogList()}
         </div>
-        )}
+      )}
     </div>
   )
 }
