@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 const testBlogObject = {
@@ -13,20 +14,61 @@ const testBlogObject = {
     id: 'user_test_id'
   }
 }
+describe('<Blog />', () => {
+  beforeEach(() => {
+    render(<Blog blog={testBlogObject} />)
+  })
+  test('displays author and title, does not display url or likes', () => {
+    const authorElement = screen.getByText('Test Author', { exact: false })
+    expect(authorElement).toBeVisible()
 
-test('renders author and title, does not render url or likes', () => {
-  render(<Blog blog={testBlogObject} />)
+    const titleElement = screen.getByText('Test Title', { exact: false })
+    expect(titleElement).toBeVisible()
 
-  const authorElement = screen.getByText('Test Author', { exact: false })
-  expect(authorElement).toBeVisible()
+    const urlElement = screen.getByText('Test Url', { exact: false })
+    expect(urlElement).not.toBeVisible()
 
-  const titleElement = screen.getByText('Test Title', { exact: false })
-  expect(titleElement).toBeVisible()
+    const likesElement = screen.getByText('7357', { exact: false })
+    expect(likesElement).not.toBeVisible()
+  })
+  test('displays url and likes after toggling more/less button once; author and title also displayed', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('more')
+    await user.click(button)
 
-  const urlElement = screen.getByText('Test Url', { exact: false })
-  expect(urlElement).not.toBeVisible()
+    const urlElement = screen.getByText('Test Url', { exact: false })
+    expect(urlElement).toBeVisible()
 
-  const likesElement = screen.getByText('7357', { exact: false })
-  expect(likesElement).not.toBeVisible()
+    const likesElement = screen.getByText('7357', { exact: false })
+    expect(likesElement).toBeVisible()
+
+    const authorElement = screen.getByText('Test Author', { exact: false })
+    expect(authorElement).toBeVisible()
+
+    const titleElement = screen.getByText('Test Title', { exact: false })
+    expect(titleElement).toBeVisible()
+
+  })
+  test('does not display url and likes after toggling more/less button twice; author and title still displayed', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('more')
+    await user.click(button)
+
+    const button_2 = screen.getByText('less')
+    await user.click(button_2)
+
+    const urlElement = screen.getByText('Test Url', { exact: false })
+    expect(urlElement).not.toBeVisible()
+
+    const likesElement = screen.getByText('7357', { exact: false })
+    expect(likesElement).not.toBeVisible()
+    const authorElement = screen.getByText('Test Author', { exact: false })
+    expect(authorElement).toBeVisible()
+
+    const titleElement = screen.getByText('Test Title', { exact: false })
+    expect(titleElement).toBeVisible()
+
+  })
+
 
 })

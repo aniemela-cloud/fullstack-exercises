@@ -29,10 +29,10 @@ const Blog = ({ blog, updateLike }) => {
       by
       <span className="blog_author">{blog.author}</span>
       <button
-        name="show toggle"
+        name="more toggle"
         onClick={toggleVisibility}
         className="visibility_toggle">
-        {visible ? 'hide' : 'show'}
+        {visible ? 'less' : 'more'}
       </button>
       <div style={showWhenVisible} className="blog_extra">
         <div className="blog_url">URL: {blog.url}</div>
