@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import NewBlog from './NewBlog'
-import { beforeEach } from 'vitest'
 
 const test_authorName = 'Test Author'
 const test_blogTitle = 'Test Title'
@@ -12,7 +11,7 @@ test('Callback function called with correct parameters when new blog entry poste
     const mockNewBlog = vi.fn()
     render(<NewBlog newBlog={mockNewBlog} />)
 
-    const authorField = screen.getByLabelText('author',{ exact: false })
+    const authorField = screen.getByLabelText('author', { exact: false })
     const titleField = screen.getByLabelText('blog title', { exact: false })
     const urlField = screen.getByLabelText('URL', { exact: false })
 
@@ -29,4 +28,5 @@ test('Callback function called with correct parameters when new blog entry poste
     expect(mockNewBlog.mock.calls[0][0].author).toBe(test_authorName)
     expect(mockNewBlog.mock.calls[0][0].title).toBe(test_blogTitle)
     expect(mockNewBlog.mock.calls[0][0].url).toBe(test_url)
-})
+  }
+)
