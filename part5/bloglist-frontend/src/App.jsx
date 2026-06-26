@@ -60,9 +60,16 @@ const App = () => {
     setUser(null)
     window.localStorage.removeItem('currentBlogUser')
   }
+
   const handleBlogDelete = async (blog) => {
     console.log('delete handler for ', blog)
-    return
+    if (window.confirm(`Really delete ${blog.title} by ${blog.author}?`)) {
+      const result = await blogService.deleteBlog(blog)
+      if (result && result.status === 204) {
+        const filteredBlogs = blogs.filter((b) => b.id !== blog.id)
+        setBlogs(filteredBlogs)
+      }
+    }
   }
 
   const createBlog = async (newBlogData) => {

@@ -29,8 +29,7 @@ const Blog = ({ blog, updateLike, deleteBlog }) => {
 
   return (
     <div className="blog" style={blogStyle}>
-      <span className="blog_title">{blog.title}</span>
-      by
+      <span className="blog_title">{blog.title}</span> by&nbsp;
       <span className="blog_author">{blog.author}</span>
       <button
         name="more toggle"
