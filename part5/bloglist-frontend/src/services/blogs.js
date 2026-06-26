@@ -20,5 +20,27 @@ const create = async (newBlogObject) => {
   return response.data
 }
 
+const update = async (blogObject) => {
+  const config = {
+    headers: { Authorization: userToken }
+  }
+  const id = blogObject.id
+  if (!id) {
+    console.error('blogs service: update called with no id set in blog object')
+    return
+  }
+  // NB: My own backend has a PATCH endpoint (see ../part4/bloglist/controllers/blogs.js)
+  // that updates the data sent without touching any of the other data. There is actually
+  // no PUT endpoint implemented, since "replace one blog list entry with a completely
+  // new data document" felt like an unnecessary feature compared to "updating some of
+  // the data of a blog list entry".
+  // (Let's not talk about the fact that the implementation where the frontend tells
+  // the backend what number to set the 'likes' to is rather prone to problems when two
+  // users are using the system at the same time. Maybe that will come up in a later
+  // exercise... Also I should have used /** */ instead of //.)
 
-export default { getAll, create, setToken }
+  const response = await axios.patch(`${baseUrl}/${id}`, blogObject, config)
+  return response.data
+}
+
+export default { getAll, create, setToken, update}

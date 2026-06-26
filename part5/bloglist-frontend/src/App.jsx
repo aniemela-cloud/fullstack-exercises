@@ -68,6 +68,11 @@ const App = () => {
     newBlogTogglableRef.current.toggleVisibility()
   }
 
+  const updateLike = async ({id, likes}) => {
+    console.log('updating likes for',id,'to',likes)
+    await blogService.update({id, likes})
+  }
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -106,7 +111,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
         {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateLike={updateLike}/>
         )}
     </div>
   )
