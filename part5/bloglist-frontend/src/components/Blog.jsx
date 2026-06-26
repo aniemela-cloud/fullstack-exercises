@@ -24,17 +24,20 @@ const Blog = ({ blog, updateLike }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      {blog.title} by {blog.author}
+    <div className="blog" style={blogStyle}>
+      <span className="blog_title">{blog.title}</span>
+      by
+      <span className="blog_author">{blog.author}</span>
       <button
         name="show toggle"
-        onClick={toggleVisibility}>
+        onClick={toggleVisibility}
+        className="visibility_toggle">
         {visible ? 'hide' : 'show'}
       </button>
-      <div style={showWhenVisible}>
-        <div>URL: {blog.url}</div>
-        <div>Likes: {likes} <button name="like" onClick={onLike}>like</button></div>
-        <div><em>({blog.user.name})</em></div>
+      <div style={showWhenVisible} className="blog_extra">
+        <div className="blog_url">URL: {blog.url}</div>
+        <div className="blog_likes">Likes: {likes} <button name="like" onClick={onLike}>like</button></div>
+        <div className="blog_user"><em>({blog.user.name})</em></div>
       </div>
     </div>
   )
