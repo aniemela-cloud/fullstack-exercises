@@ -15,10 +15,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const [newAuthor, setAuthor] = useState('')
-  const [newTitle, setTitle] = useState('')
-  const [newUrl, setUrl] = useState('')
-
   const newBlogTogglableRef = useRef()
 
   useEffect(() => {
@@ -63,17 +59,12 @@ const App = () => {
     window.localStorage.removeItem('currentBlogUser')
   }
 
-  const handleNewBlog = async (event) => {
-    event.preventDefault()
-    console.log(newAuthor, newTitle, newUrl)
-    const blogdata = await blogService.create({author:newAuthor, title:newTitle, url: newUrl})
-//    console.log(blogdata)
+  const createBlog = async (newBlogData) => {
+    console.log('createBlog got newBlogData:',newBlogData)
+    const blogdata = await blogService.create(newBlogData)
     setNotifyMessage(`${blogdata.title} by ${blogdata.author} added.`)
     setTimeout(() => setNotifyMessage(null), 5000);
     setBlogs(blogs.concat(blogdata))
-    setAuthor('')
-    setTitle('')
-    setUrl('')
     newBlogTogglableRef.current.toggleVisibility()
   }
 
@@ -89,6 +80,7 @@ const App = () => {
             type="text"
             value={username}
             name="username"
+            autoComplete='username'
             onChange={({ target }) => setUsername(target.value)}
           />
         </label>
@@ -99,6 +91,7 @@ const App = () => {
           <input
             type="password"
             value={password}
+            autoComplete='current-password'
             name="password"
             onChange={({ target }) => setPassword(target.value)}
           />
@@ -126,14 +119,8 @@ const App = () => {
         <div>
           <p>{user.name} logged in <button onClick={handleLogout} name="logout">logout</button></p>
           <Togglable buttonLabel='Add a blog' ref={newBlogTogglableRef}>
-            <NewBlog 
-              onSubmit={handleNewBlog}
-              newAuthor={newAuthor}
-              newTitle={newTitle}
-              newUrl={newUrl}
-              onAuthorChange={({target}) => setAuthor(target.value)}
-              onTitleChange={({target}) => setTitle(target.value)}
-              onUrlChange={({target}) => setUrl(target.value)}
+            <NewBlog
+              newBlog={createBlog}
             />
           </Togglable>
           {blogList()}

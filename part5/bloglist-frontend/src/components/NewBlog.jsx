@@ -1,5 +1,17 @@
-const NewBlog = ({ onSubmit, newAuthor, onAuthorChange, newTitle, onTitleChange,
-  newUrl, onUrlChange }) => {
+import { useState } from 'react'
+const NewBlog = ({ newBlog }) => {
+  const [newAuthor, setAuthor] = useState('')
+  const [newTitle, setTitle] = useState('')
+  const [newUrl, setUrl] = useState('')
+  
+  const onSubmit = async (event) => {
+    event.preventDefault()
+    newBlog({author:newAuthor, title:newTitle, url: newUrl})
+    setAuthor('')
+    setTitle('')
+    setUrl('')
+  }  
+
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -7,19 +19,19 @@ const NewBlog = ({ onSubmit, newAuthor, onAuthorChange, newTitle, onTitleChange,
         <div>
           <label>
             author: 
-            <input type="text" onChange={onAuthorChange} value={newAuthor} />
+            <input type="text" onChange={({target}) => setAuthor(target.value)} value={newAuthor} />
           </label>
         </div>
         <div>
           <label>
             blog title: 
-            <input type="text" onChange={onTitleChange} value={newTitle} />
+            <input type="text" onChange={({target}) => setTitle(target.value)} value={newTitle} />
           </label>
         </div>
         <div>
           <label>
             URL: 
-            <input type="text" onChange={onUrlChange} value={newUrl} />
+            <input type="text" onChange={({target}) => setUrl(target.value)} value={newUrl} />
           </label>
         </div>
         <div>
