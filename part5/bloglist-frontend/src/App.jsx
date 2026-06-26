@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -17,6 +18,8 @@ const App = () => {
   const [newAuthor, setAuthor] = useState('')
   const [newTitle, setTitle] = useState('')
   const [newUrl, setUrl] = useState('')
+
+  const newBlogTogglableRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -71,6 +74,7 @@ const App = () => {
     setAuthor('')
     setTitle('')
     setUrl('')
+    newBlogTogglableRef.current.toggleVisibility()
   }
 
   const loginForm = () => (
@@ -84,6 +88,7 @@ const App = () => {
           <input
             type="text"
             value={username}
+            name="username"
             onChange={({ target }) => setUsername(target.value)}
           />
         </label>
@@ -94,6 +99,7 @@ const App = () => {
           <input
             type="password"
             value={password}
+            name="password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </label>
@@ -118,8 +124,8 @@ const App = () => {
       {!user && loginForm()}
       {user && (
         <div>
-          <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
-          <div>
+          <p>{user.name} logged in <button onClick={handleLogout} name="logout">logout</button></p>
+          <Togglable buttonLabel='Add a blog' ref={newBlogTogglableRef}>
             <NewBlog 
               onSubmit={handleNewBlog}
               newAuthor={newAuthor}
@@ -129,7 +135,7 @@ const App = () => {
               onTitleChange={({target}) => setTitle(target.value)}
               onUrlChange={({target}) => setUrl(target.value)}
             />
-          </div>
+          </Togglable>
           {blogList()}
         </div>
         )}
