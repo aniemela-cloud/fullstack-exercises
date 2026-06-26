@@ -37,12 +37,12 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({ username, password })
+      const userInfo = await loginService.login({ username, password })
       window.localStorage.setItem(
         'currentBlogUser', JSON.stringify(user)
       )
-      setUser(user)
-      blogService.setToken(user.token)
+      setUser(userInfo)
+      blogService.setToken(userInfo.token)
       setUsername('')
       setPassword('')
     } catch(error) {
@@ -59,6 +59,10 @@ const App = () => {
     event.preventDefault()
     setUser(null)
     window.localStorage.removeItem('currentBlogUser')
+  }
+  const handleBlogDelete = async (blog) => {
+    console.log('delete handler for ', blog)
+    return
   }
 
   const createBlog = async (newBlogData) => {
@@ -114,9 +118,10 @@ const App = () => {
   const blogList = () => (
     <div>
       <h2>blogs</h2>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateLike={updateLike}/>
-      )}
+      {blogs.map((blog) => {
+        const deleteBlog = (user && user.username === blog.user.username ? handleBlogDelete : undefined)
+        return (<Blog key={blog.id} blog={blog} updateLike={updateLike} deleteBlog={deleteBlog}/>)
+      })}
     </div>
   )
   return (
