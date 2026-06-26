@@ -18,8 +18,10 @@ const App = () => {
   const newBlogTogglableRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs => {
+      blogs.sort((a,b) =>  b.likes - a.likes)
       setBlogs( blogs )
+      }
     )  
   }, [])
 
@@ -71,6 +73,8 @@ const App = () => {
   const updateLike = async ({id, likes}) => {
     console.log('updating likes for',id,'to',likes)
     await blogService.update({id, likes})
+    const resortedBlogs = blogs.toSorted((a,b) => b.likes - a.likes)
+    setBlogs(resortedBlogs)
   }
 
   const loginForm = () => (
