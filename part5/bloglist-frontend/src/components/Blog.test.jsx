@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import { beforeEach } from 'vitest'
 
 const testBlogObject = {
   author: 'Test Author',
@@ -14,7 +15,7 @@ const testBlogObject = {
     id: 'user_test_id'
   }
 }
-describe('<Blog />', () => {
+describe('Blog more/less button toggle behavior', () => {
   beforeEach(() => {
     render(<Blog blog={testBlogObject} />)
   })
@@ -67,8 +68,25 @@ describe('<Blog />', () => {
 
     const titleElement = screen.getByText('Test Title', { exact: false })
     expect(titleElement).toBeVisible()
-
   })
+})
+describe('Blog like button behavior', () => {
+  test('clicking the like button twice generates two callbacks', async() => {
+    const mockUpdateLike = vi.fn()
 
+    render(<Blog blog={testBlogObject} updateLike={mockUpdateLike}/>)
 
+    const user = userEvent.setup()
+    const button = screen.getByText('more')
+
+    await user.click(button)
+    // the 'like' button should now be visible
+    const like_button = screen.getByText('like')
+
+    await user.click(like_button)
+    expect(mockUpdateLike.mock.calls).toHaveLength(1)
+
+    await user.click(like_button)
+    expect(mockUpdateLike.mock.calls).toHaveLength(2)
+  })
 })
