@@ -44,6 +44,7 @@ const App = () => {
         'currentBlogUser', JSON.stringify(user)
       )
       setUser(userInfo)
+      console.log('handleLogin userInfo:',userInfo)
       blogService.setToken(userInfo.token)
       setUsername('')
       setPassword('')
@@ -77,6 +78,7 @@ const App = () => {
   const createBlog = async (newBlogData) => {
     console.log('createBlog got newBlogData:',newBlogData)
     const blogdata = await blogService.create(newBlogData)
+    console.log('blogdata from blogService', blogdata)
     setNotifyMessage(`${blogdata.title} by ${blogdata.author} added.`)
     setTimeout(() => setNotifyMessage(null), 5000)
     setBlogs(blogs.concat(blogdata))
@@ -128,6 +130,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       {blogs.map((blog) => {
+        console.log('blogList map: user:',user,'blog',blog)
         const deleteBlog = (user && user.username === blog.user.username ? handleBlogDelete : undefined)
         return (<Blog key={blog.id} blog={blog} updateLike={updateLike} deleteBlog={deleteBlog}/>)
       })}
