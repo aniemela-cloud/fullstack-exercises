@@ -14,7 +14,7 @@ mongoose.connect(mongoUrl, { family: 4 })
 
 app.use(cors())
 app.use(express.json())
-if (process.env.NODE_ENV !== "test") {
+if (1 || process.env.NODE_ENV !== "test") {
     morgan.token('rq-body', (req) => {
         return JSON.stringify(req.body)
     })
