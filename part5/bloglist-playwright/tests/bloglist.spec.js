@@ -112,7 +112,6 @@ describe('Blog app', () => {
             await expect(page.locator('div.blog_extra > div.blog_url')).not.toBeVisible()
         })
 
-
         test('A blog can be liked, and liking increases like count', async ({ page }) => {
             const test_author = 'Test Author'
             const test_title = 'Test Blog Entry'
@@ -164,6 +163,61 @@ describe('Blog app', () => {
             const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
             await more_button.click()
             await expect(page.locator('div.blog_delete').getByRole('button', { name: /delete/i })).not.toBeVisible()
+        })
+
+        test('Blogs are sorted according to likes', async ({ page }) => {
+            const test_author = ['Test Author', 'Other Test Author', 'Third Test Author']
+            const test_title = ['Test Blog Entry', 'Second Blog Entry', 'Third Blog Entry']
+            const test_url = ['http://test.url.is/111', 'http://test.url.is/222', 'http://test.url.is/333']
+
+            await helper.createPost(page, { author: test_author[0], title: test_title[0], url: test_url[0] })
+            await helper.createPost(page, { author: test_author[1], title: test_title[1], url: test_url[1] })
+            await helper.createPost(page, { author: test_author[2], title: test_title[2], url: test_url[2] })
+
+            const blog_divs = [
+                page.locator('div.blog').filter({ hasText: test_title[0] }),
+                page.locator('div.blog').filter({ hasText: test_title[1] }),
+                page.locator('div.blog').filter({ hasText: test_title[2] }),
+            ]
+            // then we get the like button for each of the blog entries
+            // these references are maintained even if the posts are re-ordered
+            // since they rely on filter() finding the correct div
+            const like_buttons = [
+                blog_divs[0].getByRole('button',{ name: "like"}),
+                blog_divs[1].getByRole('button',{ name: "like"}),
+                blog_divs[2].getByRole('button',{ name: "like"})
+            ]
+            // first we click all the more buttons; we use first() since clicking
+            // the button turns it into a 'less' button
+            for (let i=0; i<3; i++) {
+                await page.getByRole('button', { name: 'more' }).first().click()                
+            }
+            // click the like button of the third post (no matter it's position) two times
+            await like_buttons[2].click()
+            await like_buttons[2].click()
+            // now idx 2 should be at the top, assuming the nth updates when the order of objects
+            // in the DOM updates... and it should?
+            await expect(page.locator('div.blog').nth(0)).toContainText(test_title[2])
+            // now click 'Second Blog Entry's like button three times
+            await like_buttons[1].click()
+            await like_buttons[1].click()
+            await like_buttons[1].click()
+            // and now it should be at the top
+            await expect(page.locator('div.blog').nth(0)).toContainText(test_title[1])
+            // and idx 2 is at the second position
+            await expect(page.locator('div.blog').nth(1)).toContainText(test_title[2])
+            // Click idx 1 one more time to make sure it maintains the top spot
+            await like_buttons[1].click()
+            // Then clic post 0's like button three times to move it from the last spot to
+            // the second spot
+            await like_buttons[0].click()
+            await like_buttons[0].click()
+            await like_buttons[0].click()
+            await expect(page.locator('div.blog').nth(1)).toContainText(test_title[0])
+            // Then two more clicks to take it to the top spot
+            await like_buttons[0].click()
+            await like_buttons[0].click()
+            await expect(page.locator('div.blog').nth(0)).toContainText(test_title[0])
         })
 
     })
