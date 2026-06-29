@@ -142,6 +142,30 @@ describe('Blog app', () => {
             await expect(page.locator('div.blog > span.blog_title', { hasText: `${test_title}`})).not.toBeVisible()
         })
 
+        test('User who did not create the blog does not see a delete button', async ({ page, request }) => {
+            await request.post('http://localhost:3003/api/users', {
+                data: {
+                    name: 'Deletion Helper',
+                    username: 'deleteuser',
+                    password: 'delete123'
+                }
+            })
+            const test_author = 'Test Author'
+            const test_title = 'Deletion Test Blog Entry'
+            const test_url = 'http://test.url.is/gonna_be_deleted'
+            // Create post with the user automatically logged in with for the test
+            await helper.createPost(page, { author: test_author, title: test_title, url: test_url })
+            // Log out
+            const logout_button = page.getByRole('button', { 'name': /logout/i })
+            await(expect(logout_button)).toBeVisible()
+            await logout_button.click()
+            // Log in with the user created for this specific test
+            await helper.loginWith(page, 'deleteuser', 'delete123')
+            const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
+            await more_button.click()
+            await expect(page.locator('div.blog_delete').getByRole('button', { name: /delete/i })).not.toBeVisible()
+        })
+
     })
 
 })
