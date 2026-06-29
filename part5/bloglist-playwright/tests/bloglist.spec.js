@@ -127,6 +127,21 @@ describe('Blog app', () => {
 
         })
 
+        test('A blog can be deleted by the user who created it', async ({ page }) => {
+            const test_author = 'Test Author'
+            const test_title = 'Deletion Test Blog Entry'
+            const test_url = 'http://test.url.is/gonna_be_deleted'
+
+            await helper.createPost(page, { author: test_author, title: test_title, url: test_url })
+            const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
+            await more_button.click()
+            const delete_button = page.locator('div.blog_delete').getByRole('button', { name: /delete/i })
+            await expect(delete_button).toBeVisible()
+            page.on('dialog', dialog => dialog.accept())
+            await delete_button.click()
+            await expect(page.locator('div.blog > span.blog_title', { hasText: `${test_title}`})).not.toBeVisible()
+        })
+
     })
 
 })
