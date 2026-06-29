@@ -63,7 +63,8 @@ blogRouter.post('/', userExtractor, async (request, response) => {
       user: user._id
     }
   )
-  const result = await blog.save()
+  await blog.save()
+  const result = await Blog.find({ _id: blog._id }).populate('user', {username: 1, name: 1, _id: 1})
   if (!user.blogs) {
     user.blogs = []
   }
