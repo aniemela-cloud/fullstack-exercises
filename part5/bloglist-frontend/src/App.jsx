@@ -29,8 +29,10 @@ const App = () => {
     const storedUserJSON = window.localStorage.getItem('currentBlogUser')
     if (storedUserJSON) {
       const user = JSON.parse(storedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+      if(user && user.token) {
+        setUser(user)
+        blogService.setToken(user.token)
+      }
     }
   }, [])
 
