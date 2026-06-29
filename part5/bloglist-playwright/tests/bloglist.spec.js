@@ -92,6 +92,41 @@ describe('Blog app', () => {
             await expect(page.locator('div.blog > span.blog_title', { hasText: `${test_title}`})).toBeVisible()
         })
 
+        test('A blogs likes are not shown by default; clicking \'more\' shows likes, clicking \'less\' re-hides them ', async ({ page }) => {
+            const test_author = 'Test Author'
+            const test_title = 'Test Blog Entry'
+            const test_url = 'http://test.url.is'
+
+            await helper.createPost(page, { author: test_author, title: test_title, url: test_url })
+            // sanity check that a blog has been added to the page
+            await expect(page.locator('div.blog > span.blog_title', { hasText: `${test_title}`})).toBeVisible()
+            const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
+            await expect(more_button).toBeVisible()
+            await more_button.click()
+            await expect(page.locator('div.blog_extra > div.blog_likes')).toBeVisible()
+            await expect(page.locator('div.blog_extra > div.blog_url')).toBeVisible()
+            const less_button = page.locator('div.blog').getByRole('button', { name: /less/i, exact:false })
+            await expect(less_button).toBeVisible()
+            await less_button.click()
+            await expect(page.locator('div.blog_extra > div.blog_likes')).not.toBeVisible()
+            await expect(page.locator('div.blog_extra > div.blog_url')).not.toBeVisible()
+        })
+
+
+        test('A blog can be liked, and liking increases like count', async ({ page }) => {
+            const test_author = 'Test Author'
+            const test_title = 'Test Blog Entry'
+            const test_url = 'http://test.url.is'
+
+            await helper.createPost(page, { author: test_author, title: test_title, url: test_url })
+            const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
+            await more_button.click()
+            const like_button = page.locator('div.blog_extra').getByRole('button', { name: /like/i })
+            await like_button.click()
+            await expect(page.locator('div.blog_extra > div.blog_likes').getByText('Likes: 1')).toBeVisible()
+
+        })
+
     })
 
 })
