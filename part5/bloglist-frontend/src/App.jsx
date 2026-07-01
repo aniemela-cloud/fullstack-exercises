@@ -87,6 +87,7 @@ const App = () => {
         const filteredBlogs = blogs.filter((b) => b.id !== blog.id)
         setBlogs(filteredBlogs)
       }
+      navigate('/')
     }
   }
 
