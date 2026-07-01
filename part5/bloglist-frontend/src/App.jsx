@@ -1,8 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
+import {
+  Routes, Route, Link,
+} from 'react-router-dom'
+
+import { useNavigate } from 'react-router-dom'
+
 import Blog from './components/Blog'
+import BlogList from './components/BlogList'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -16,6 +24,7 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const newBlogTogglableRef = useRef()
+  const navigate = useNavigate()
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -48,6 +57,8 @@ const App = () => {
       blogService.setToken(userInfo.token)
       setUsername('')
       setPassword('')
+      navigate('/')
+      //return redirect('/')
     } catch(error) {
       setErrorMessage('Login failed. Check username/password.')
       setTimeout(() => setErrorMessage(null), 5000)
@@ -126,17 +137,7 @@ const App = () => {
       </div>
     </form>
   )
-  const blogList = () => (
-    <div>
-      <h2>blogs</h2>
-      {blogs.map((blog) => {
-        console.log('blogList map: user:',user,'blog',blog)
-        const deleteBlog = (user && user.username === blog.user.username ? handleBlogDelete : undefined)
-        return (<Blog key={blog.id} blog={blog} updateLike={updateLike} deleteBlog={deleteBlog}/>)
-      })}
-    </div>
-  )
-  return (
+/*  return (
     <div>
       <Notification message={notifyMessage} className="notice" />
       <Notification message={errorMessage} className="error" />
@@ -152,6 +153,26 @@ const App = () => {
           {blogList()}
         </div>
       )}
+    </div>
+  ) */
+  const padding = { padding: 5 }
+  return (
+    <div>
+      <div>
+        <Link style={padding} to="/">Home</Link>
+        {!user && (<Link style={padding} to="/login">Login</Link>)}
+        {user && (<button onClick={handleLogout} name="logout">logout</button>)}
+      </div>
+      <div>
+        <Notification message={notifyMessage} className="notice" />
+        <Notification message={errorMessage} className="error" />
+      </div>
+      <Routes>
+        <Route path="login" element = {loginForm()}/>
+        <Route index element = {
+          <BlogList blogs={blogs} handleBlogDelete={handleBlogDelete} updateLike={updateLike} />
+        } />
+      </Routes>
     </div>
   )
 }
