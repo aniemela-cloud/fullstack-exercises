@@ -5,7 +5,10 @@ import {
 } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
-import { Container, TextField, Button, FormControl, InputLabel } from '@mui/material'
+import {
+  Container, TextField, Button, FormControl, InputLabel,
+  AppBar, Toolbar, Typography
+} from '@mui/material'
 
 import Blog from './components/Blog'
 import BlogList from './components/BlogList'
@@ -17,24 +20,22 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [notifyMessage, setNotifyMessage] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
-
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
 
   //const newBlogTogglableRef = useRef()
   const navigate = useNavigate()
 
   const match = useMatch('/blogs/:id')
-  const blog = match ? blogs.find(b => b.id === match.params.id ) : null
+  const blog = match ? blogs.find(b => b.id === match.params.id) : null
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
-      blogs.sort((a,b) =>  b.likes - a.likes)
-      setBlogs( blogs )
+      blogs.sort((a, b) => b.likes - a.likes)
+      setBlogs(blogs)
     }
     )
   }, [])
@@ -43,7 +44,7 @@ const App = () => {
     const storedUserJSON = window.localStorage.getItem('currentBlogUser')
     if (storedUserJSON) {
       const user = JSON.parse(storedUserJSON)
-      if(user && user.token) {
+      if (user && user.token) {
         setUser(user)
         blogService.setToken(user.token)
       }
@@ -58,22 +59,22 @@ const App = () => {
         'currentBlogUser', JSON.stringify(user)
       )
       setUser(userInfo)
-      console.log('handleLogin userInfo:',userInfo)
+      console.log('handleLogin userInfo:', userInfo)
       blogService.setToken(userInfo.token)
       setUsername('')
       setPassword('')
       navigate('/')
-      setNotifyMessage(`${userInfo.name} logged in.`)
-      setTimeout(() => setNotifyMessage(null), 5000)
+      setMessage({ text: `${userInfo.name} logged in.`, type: 'success' })
+      setTimeout(() => setMessage(null), 5000)
       //return redirect('/')
-    } catch(error) {
-      setErrorMessage('Login failed. Check username/password.')
-      setTimeout(() => setErrorMessage(null), 5000)
+    } catch (error) {
+      setMessage({ text: 'Login failed. Check username/password.', type: 'error' })
+      setTimeout(() => setMessage(null), 5000)
       setUsername('')
       setPassword('')
-      console.error('caught error ',error)
+      console.error('caught error ', error)
     }
-    console.log('handleLogin called username:',username, 'password', password)
+    console.log('handleLogin called username:', username, 'password', password)
   }
 
   const handleLogout = (event) => {
@@ -95,20 +96,20 @@ const App = () => {
   }
 
   const createBlog = async (newBlogData) => {
-    console.log('createBlog got newBlogData:',newBlogData)
+    console.log('createBlog got newBlogData:', newBlogData)
     const blogdata = await blogService.create(newBlogData)
     console.log('blogdata from blogService', blogdata)
-    setNotifyMessage(`${blogdata.title} by ${blogdata.author} added.`)
-    setTimeout(() => setNotifyMessage(null), 5000)
+    setMessage({ text: `${blogdata.title} by ${blogdata.author} added.`, type: 'success' })
+    setTimeout(() => setMessage(null), 5000)
     setBlogs(blogs.concat(blogdata))
     navigate('/')
     //newBlogTogglableRef.current.toggleVisibility()
   }
 
   const updateLike = async ({ id, likes }) => {
-    console.log('updating likes for',id,'to',likes)
+    console.log('updating likes for', id, 'to', likes)
     await blogService.update({ id, likes })
-    const resortedBlogs = blogs.toSorted((a,b) => b.likes - a.likes)
+    const resortedBlogs = blogs.toSorted((a, b) => b.likes - a.likes)
     setBlogs(resortedBlogs)
   }
 
@@ -159,29 +160,33 @@ const App = () => {
       )}
     </div>
   ) */
-  const padding = { padding: 5 }
+  const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
   return (
     <Container>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+            Blog App
+          </Typography>
+          <Button color="inherit" component={Link} sx={style} to="/">Home</Button>
+          {!user && (<Button color="inherit" component={Link} sx={style} to="/login">Login</Button>)}
+          {user && (<Button color="inherit" component={Link} sx={style} to="/newblog">New Blog</Button>)}
+          {user && (<Button color="inherit" onClick={handleLogout} sx={style} name="logout">logout</Button>)}
+        </Toolbar>
+      </AppBar>
       <div>
-        <Link style={padding} to="/">Home</Link>
-        {!user && (<Link style={padding} to="/login">Login</Link>)}
-        {user && (<Link style={padding} to="/newblog">New Blog</Link>)}
-        {user && (<button onClick={handleLogout} name="logout">logout</button>)}
-      </div>
-      <div>
-        <Notification message={notifyMessage} className="notice" />
-        <Notification message={errorMessage} className="error" />
+        <Notification message={message} />
       </div>
       <Routes>
-        <Route path="/login" element = {loginForm()}/>
-        <Route index element = {
+        <Route path="/login" element={loginForm()} />
+        <Route index element={
           <BlogList blogs={blogs} handleBlogDelete={handleBlogDelete} updateLike={updateLike} />
         } />
-        <Route path="/blogs/:id" element = {
-          <Blog blog={blog} updateLike={updateLike} deleteBlog={handleBlogDelete} user={user}/>
+        <Route path="/blogs/:id" element={
+          <Blog blog={blog} updateLike={updateLike} deleteBlog={handleBlogDelete} user={user} />
         } />
-        <Route path="/newblog" element = {
-          <NewBlog newBlog={createBlog}/>
+        <Route path="/newblog" element={
+          <NewBlog newBlog={createBlog} />
         } />
       </Routes>
     </Container>
