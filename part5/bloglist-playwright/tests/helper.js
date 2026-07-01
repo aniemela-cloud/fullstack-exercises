@@ -6,8 +6,8 @@ const loginWith = async (page, username, password) => {
     const login_link = page.getByRole('link', { name: 'login' })
     await login_link.click()
 
-    const username_field = page.getByLabel('username')
-    const password_field = page.getByLabel('password')
+    const username_field = page.locator('input[name="username"]')
+    const password_field = page.locator('input[name="password"]')
 
     await username_field.fill(username)
     await password_field.fill(password)

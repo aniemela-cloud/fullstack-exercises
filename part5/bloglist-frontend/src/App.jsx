@@ -3,8 +3,9 @@ import {
   Routes, Route, Link,
   useMatch,
 } from 'react-router-dom'
-
 import { useNavigate } from 'react-router-dom'
+
+import { Container, TextField, Button, FormControl, InputLabel } from '@mui/material'
 
 import Blog from './components/Blog'
 import BlogList from './components/BlogList'
@@ -114,34 +115,29 @@ const App = () => {
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
-        <h2>login</h2>
+        <h2>Login to BlogList</h2>
       </div>
+      <FormControl>
+        <TextField
+          label="Username"
+          value={username}
+          name="username"
+          autoComplete='username'
+          onChange={({ target }) => setUsername(target.value)}
+        />
+      </FormControl>
+      <FormControl>
+        <TextField
+          label="Password"
+          type="password"
+          value={password}
+          autoComplete='current-password'
+          name="password"
+          onChange={({ target }) => setPassword(target.value)}
+        />
+      </FormControl>
       <div>
-        <label>
-          username
-          <input
-            type="text"
-            value={username}
-            name="username"
-            autoComplete='username'
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          password
-          <input
-            type="password"
-            value={password}
-            autoComplete='current-password'
-            name="password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <button type="submit">login</button>
+        <Button type="submit" variant="contained">login</Button>
       </div>
     </form>
   )
@@ -165,7 +161,7 @@ const App = () => {
   ) */
   const padding = { padding: 5 }
   return (
-    <div>
+    <Container>
       <div>
         <Link style={padding} to="/">Home</Link>
         {!user && (<Link style={padding} to="/login">Login</Link>)}
@@ -188,7 +184,7 @@ const App = () => {
           <NewBlog newBlog={createBlog}/>
         } />
       </Routes>
-    </div>
+    </Container>
   )
 }
 
