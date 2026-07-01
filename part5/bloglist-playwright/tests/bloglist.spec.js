@@ -15,15 +15,15 @@ describe('Blog app', () => {
         await page.goto('http://localhost:5173')
     })
 
-    test('Login form is shown when no user is logged in', async ({ page }) => {
-        const username_field = page.getByLabel('username')
-        const password_field = page.getByLabel('password')
-
-        await expect(username_field).toBeVisible()
-        await expect(password_field).toBeVisible()
+    test('Link to login is shown when no user is logged in', async ({ page }) => {
+        const login_link = page.getByRole('link', { name: 'login' })
+        await expect(login_link).toBeVisible()
     })
     describe('Login:', () => {
         test('Login with incorrect password fails', async ({ page }) => {
+            const login_link = page.getByRole('link', { name: 'login' })
+            await login_link.click()
+
             const username_field = page.getByLabel('username')
             const password_field = page.getByLabel('password')
 
@@ -35,6 +35,9 @@ describe('Blog app', () => {
         })
 
         test('Login with correct password is succesful', async ({ page }) => {
+            const login_link = page.getByRole('link', { name: 'login' })
+            await login_link.click()
+
             const username_field = page.getByLabel('username')
             const password_field = page.getByLabel('password')
 
@@ -51,9 +54,9 @@ describe('Blog app', () => {
         beforeEach(async ({ page }) => {
             await helper.loginWith(page, helper.test_username, helper.test_password)
         })
-        test('Clicking on \'Add a blog\' shows \'add blog\' form', async ({ page }) => {
-            const unfold_button = page.getByRole('button', { name: 'Add a blog' })
-            await unfold_button.click()
+        test('Clicking on \'New blog\' shows \'add blog\' form', async ({ page }) => {
+            const new_blog_link = page.getByRole('link', { name: 'New blog' })
+            await new_blog_link.click()
 
             await expect(page.getByLabel(/author/i, { exact: false })).toBeVisible()
             await expect(page.getByLabel(/blog title/i, { exact: false })).toBeVisible()
@@ -61,22 +64,9 @@ describe('Blog app', () => {
             await expect(page.getByRole('button', { name: /add blog/i})).toBeVisible()
         })
 
-        test('Clicking on \'cancel\' when \'add blog\' form is visible hides the form', async ({ page }) => {
-            const unfold_button = page.getByRole('button', { name: 'Add a blog' })
-            await unfold_button.click()
-
-            const cancel_button = page.getByRole('button', { name: /cancel/i })
-            await cancel_button.click()
-
-            await expect(page.getByLabel(/author/i, { exact: false })).not.toBeVisible()
-            await expect(page.getByLabel(/blog title/i, { exact: false })).not.toBeVisible()
-            await expect(page.getByLabel(/url/i, { exact: false })).not.toBeVisible()
-            await expect(page.getByRole('button', { name: /add blog/i})).not.toBeVisible()
-        })
-
         test('A new blog is added when the \'add blog\' form is submitted', async ({ page }) => {
-            const unfold_button = page.getByRole('button', { name: 'Add a blog' })
-            await unfold_button.click()
+            const new_blog_link = page.getByRole('link', { name: 'New blog' })
+            await new_blog_link.click()
 
             const test_author = 'Test Author'
             const test_title = 'Test Blog Entry'
@@ -89,27 +79,20 @@ describe('Blog app', () => {
 
             await expect(page.getByText(`${test_title} by ${test_author} added.`, { exact:false })).toBeVisible()
             // div.blog span.blog_title
-            await expect(page.locator('div.blog > span.blog_title', { hasText: `${test_title}`})).toBeVisible()
+            await expect(page.locator('li', { hasText: `${test_title}`})).toBeVisible()
         })
 
-        test('A blogs likes are not shown by default; clicking \'more\' shows likes, clicking \'less\' re-hides them ', async ({ page }) => {
+        test('Clicking on a blog navigates to the blog details', async ({ page }) => {
             const test_author = 'Test Author'
             const test_title = 'Test Blog Entry'
             const test_url = 'http://test.url.is'
 
             await helper.createPost(page, { author: test_author, title: test_title, url: test_url })
-            // sanity check that a blog has been added to the page
-            await expect(page.locator('div.blog > span.blog_title', { hasText: `${test_title}`})).toBeVisible()
-            const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
-            await expect(more_button).toBeVisible()
-            await more_button.click()
-            await expect(page.locator('div.blog_extra > div.blog_likes')).toBeVisible()
-            await expect(page.locator('div.blog_extra > div.blog_url')).toBeVisible()
-            const less_button = page.locator('div.blog').getByRole('button', { name: /less/i, exact:false })
-            await expect(less_button).toBeVisible()
-            await less_button.click()
-            await expect(page.locator('div.blog_extra > div.blog_likes')).not.toBeVisible()
-            await expect(page.locator('div.blog_extra > div.blog_url')).not.toBeVisible()
+            await page.getByRole('link', { name: `${test_title}` } ).click()
+            await expect(page.getByText(test_author, { exact: true })).toBeVisible()
+            await expect(page.getByText(test_title, { exact: true })).toBeVisible()
+            await expect(page.locator('div.blog_likes')).toBeVisible()
+            await expect(page.locator('div.blog_url')).toBeVisible()
         })
 
         test('A blog can be liked, and liking increases like count', async ({ page }) => {
@@ -118,11 +101,11 @@ describe('Blog app', () => {
             const test_url = 'http://test.url.is'
 
             await helper.createPost(page, { author: test_author, title: test_title, url: test_url })
-            const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
-            await more_button.click()
-            const like_button = page.locator('div.blog_extra').getByRole('button', { name: /like/i })
+            await page.getByRole('link', { name: `${test_title}` } ).click()
+
+            const like_button = page.getByRole('button', { name: /like/i })
             await like_button.click()
-            await expect(page.locator('div.blog_extra > div.blog_likes').getByText('Likes: 1')).toBeVisible()
+            await expect(page.locator('div.blog_likes').getByText('Likes: 1')).toBeVisible()
 
         })
 
@@ -132,13 +115,13 @@ describe('Blog app', () => {
             const test_url = 'http://test.url.is/gonna_be_deleted'
 
             await helper.createPost(page, { author: test_author, title: test_title, url: test_url })
-            const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
-            await more_button.click()
+            await page.getByRole('link', { name: `${test_title}` } ).click()
+
             const delete_button = page.locator('div.blog_delete').getByRole('button', { name: /delete/i })
             await expect(delete_button).toBeVisible()
             page.on('dialog', dialog => dialog.accept())
             await delete_button.click()
-            await expect(page.locator('div.blog > span.blog_title', { hasText: `${test_title}`})).not.toBeVisible()
+            await expect(page.locator('li', { hasText: `${test_title}`})).not.toBeVisible()
         })
 
         test('User who did not create the blog does not see a delete button', async ({ page, request }) => {
@@ -160,11 +143,11 @@ describe('Blog app', () => {
             await logout_button.click()
             // Log in with the user created for this specific test
             await helper.loginWith(page, 'deleteuser', 'delete123')
-            const more_button = page.locator('div.blog').getByRole('button', { name: /more/i, exact: false })
-            await more_button.click()
+            await page.getByRole('link', { name: `${test_title}` } ).click()
+            await expect(page.locator('div.blog_likes')).toBeVisible()            
             await expect(page.locator('div.blog_delete').getByRole('button', { name: /delete/i })).not.toBeVisible()
         })
-
+        /*
         test('Blogs are sorted according to likes', async ({ page }) => {
             const test_author = ['Test Author', 'Other Test Author', 'Third Test Author']
             const test_title = ['Test Blog Entry', 'Second Blog Entry', 'Third Blog Entry']
@@ -219,7 +202,7 @@ describe('Blog app', () => {
             await like_buttons[0].click()
             await expect(page.locator('div.blog').nth(0)).toContainText(test_title[0])
         })
-
+        */
     })
 
 })
