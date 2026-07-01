@@ -92,7 +92,7 @@ describe('Blog app', () => {
             await expect(page.getByText(test_author, { exact: true })).toBeVisible()
             await expect(page.getByText(test_title, { exact: true })).toBeVisible()
             await expect(page.locator('div.blog_likes')).toBeVisible()
-            await expect(page.locator('div.blog_url')).toBeVisible()
+            await expect(page.locator('.blog_url')).toBeVisible()
         })
 
         test('A blog can be liked, and liking increases like count', async ({ page }) => {
@@ -117,7 +117,7 @@ describe('Blog app', () => {
             await helper.createPost(page, { author: test_author, title: test_title, url: test_url })
             await page.getByRole('link', { name: `${test_title}` } ).click()
 
-            const delete_button = page.locator('div.blog_delete').getByRole('button', { name: /delete/i })
+            const delete_button = page.getByRole('button', { name: /delete/i })
             await expect(delete_button).toBeVisible()
             page.on('dialog', dialog => dialog.accept())
             await delete_button.click()
