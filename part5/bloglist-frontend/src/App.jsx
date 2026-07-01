@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   Routes, Route, Link,
+  useMatch,
 } from 'react-router-dom'
 
 import { useNavigate } from 'react-router-dom'
@@ -25,6 +26,9 @@ const App = () => {
 
   const newBlogTogglableRef = useRef()
   const navigate = useNavigate()
+
+  const match = useMatch('/blogs/:id')
+  const blog = match ? blogs.find(b => b.id === match.params.id ) : null
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -168,9 +172,12 @@ const App = () => {
         <Notification message={errorMessage} className="error" />
       </div>
       <Routes>
-        <Route path="login" element = {loginForm()}/>
+        <Route path="/login" element = {loginForm()}/>
         <Route index element = {
           <BlogList blogs={blogs} handleBlogDelete={handleBlogDelete} updateLike={updateLike} />
+        } />
+        <Route path="/blogs/:id" element = {
+          <Blog blog={blog} updateLike={updateLike} deleteBlog={handleBlogDelete} user={user}/>
         } />
       </Routes>
     </div>
