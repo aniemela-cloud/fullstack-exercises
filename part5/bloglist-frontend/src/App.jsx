@@ -97,7 +97,8 @@ const App = () => {
     setNotifyMessage(`${blogdata.title} by ${blogdata.author} added.`)
     setTimeout(() => setNotifyMessage(null), 5000)
     setBlogs(blogs.concat(blogdata))
-    newBlogTogglableRef.current.toggleVisibility()
+    navigate('/')
+    //newBlogTogglableRef.current.toggleVisibility()
   }
 
   const updateLike = async ({ id, likes }) => {
@@ -165,6 +166,7 @@ const App = () => {
       <div>
         <Link style={padding} to="/">Home</Link>
         {!user && (<Link style={padding} to="/login">Login</Link>)}
+        {user && (<Link style={padding} to="/newblog">New Blog</Link>)}
         {user && (<button onClick={handleLogout} name="logout">logout</button>)}
       </div>
       <div>
@@ -178,6 +180,9 @@ const App = () => {
         } />
         <Route path="/blogs/:id" element = {
           <Blog blog={blog} updateLike={updateLike} deleteBlog={handleBlogDelete} user={user}/>
+        } />
+        <Route path="/newblog" element = {
+          <NewBlog newBlog={createBlog}/>
         } />
       </Routes>
     </div>
