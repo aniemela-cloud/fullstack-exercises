@@ -1,7 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
-import { beforeEach } from 'vitest'
+import { assert, beforeEach } from 'vitest'
+
+const mockedUseNavigate = vi.fn()
+vi.mock('react-router-dom', async () => {
+  const mod = await vi.importActual<typeof import('react-router-dom')>(
+    'react-router-dom'
+  )
+  return {
+    ...mod,
+    useNavigate: () => mockedUseNavigate,
+  }
+})
 
 const testBlogObject = {
   author: 'Test Author',
@@ -15,28 +26,20 @@ const testBlogObject = {
     id: 'user_test_id'
   }
 }
-describe('Blog more/less button toggle behavior', () => {
+const testUserObject = {
+  name: 'Test User',
+  username: 'testuser'
+}
+const otherUserObject = {
+  name: 'Some Other User',
+  username: 'otheruser'
+}
+
+describe('Blog display to unauthenticated users', () => {
   beforeEach(() => {
     render(<Blog blog={testBlogObject} />)
   })
-  test('displays author and title, does not display url or likes', () => {
-    const authorElement = screen.getByText('Test Author', { exact: false })
-    expect(authorElement).toBeVisible()
-
-    const titleElement = screen.getByText('Test Title', { exact: false })
-    expect(titleElement).toBeVisible()
-
-    const urlElement = screen.getByText('Test Url', { exact: false })
-    expect(urlElement).not.toBeVisible()
-
-    const likesElement = screen.getByText('7357', { exact: false })
-    expect(likesElement).not.toBeVisible()
-  })
-  test('displays url and likes after toggling more/less button once; author and title also displayed', async () => {
-    const user = userEvent.setup()
-    const button = screen.getByText('more')
-    await user.click(button)
-
+  test('author, title, url and likes are displayed', () => {
     const urlElement = screen.getByText('Test Url', { exact: false })
     expect(urlElement).toBeVisible()
 
@@ -48,39 +51,61 @@ describe('Blog more/less button toggle behavior', () => {
 
     const titleElement = screen.getByText('Test Title', { exact: false })
     expect(titleElement).toBeVisible()
-
   })
-  test('does not display url and likes after toggling more/less button twice; author and title still displayed', async () => {
-    const user = userEvent.setup()
-    const button = screen.getByText('more')
-    await user.click(button)
+  test('like button and delete button are not displayed', () => {
+    const like_button = screen.queryByText('like')
+    assert.isNull(like_button)
 
-    const button_2 = screen.getByText('less')
-    await user.click(button_2)
-
-    const urlElement = screen.getByText('Test Url', { exact: false })
-    expect(urlElement).not.toBeVisible()
-
-    const likesElement = screen.getByText('7357', { exact: false })
-    expect(likesElement).not.toBeVisible()
-    const authorElement = screen.getByText('Test Author', { exact: false })
-    expect(authorElement).toBeVisible()
-
-    const titleElement = screen.getByText('Test Title', { exact: false })
-    expect(titleElement).toBeVisible()
+    const delete_button = screen.queryByText(/delete/i)
+    assert.isNull(delete_button)
   })
 })
-describe('Blog like button behavior', () => {
+
+describe('Authenticated user who did not create the blog', () => {
+  let mockUpdateLike
+  beforeEach(() => {
+    mockUpdateLike = vi.fn()
+    render(<Blog blog={testBlogObject} user={otherUserObject} updateLike={mockUpdateLike} />)
+  })
+  test('like button is displayed', () => {
+    const like_button = screen.getByText('like')
+    expect(like_button).toBeVisible()
+  })
+
+  test('delete button is not displayed', () => {
+    const delete_button = screen.queryByText(/delete/i)
+    assert.isNull(delete_button)
+  })
+
   test('clicking the like button twice generates two callbacks', async() => {
-    const mockUpdateLike = vi.fn()
-
-    render(<Blog blog={testBlogObject} updateLike={mockUpdateLike}/>)
-
     const user = userEvent.setup()
-    const button = screen.getByText('more')
+    const like_button = screen.getByText('like')
 
-    await user.click(button)
-    // the 'like' button should now be visible
+    await user.click(like_button)
+    expect(mockUpdateLike.mock.calls).toHaveLength(1)
+
+    await user.click(like_button)
+    expect(mockUpdateLike.mock.calls).toHaveLength(2)
+  })
+})
+
+
+describe('Authenticated user who created the blog', () => {
+  let mockUpdateLike
+  beforeEach(() => {
+    mockUpdateLike = vi.fn()
+    render(<Blog blog={testBlogObject} user={testUserObject} updateLike={mockUpdateLike} />)
+  })
+  test('like button is displayed', () => {
+    const like_button = screen.getByText('like')
+    expect(like_button).toBeVisible()
+  })
+  test('delete button is displayed', () => {
+    const delete_button = screen.getByText(/delete/i)
+    expect(delete_button).toBeVisible()
+  })
+  test('clicking the like button twice generates two callbacks', async() => {
+    const user = userEvent.setup()
     const like_button = screen.getByText('like')
 
     await user.click(like_button)
