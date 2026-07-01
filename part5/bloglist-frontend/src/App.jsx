@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Routes, Route, Link,
   useMatch,
@@ -24,7 +24,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const newBlogTogglableRef = useRef()
+  //const newBlogTogglableRef = useRef()
   const navigate = useNavigate()
 
   const match = useMatch('/blogs/:id')
@@ -143,7 +143,7 @@ const App = () => {
       </div>
     </form>
   )
-/*  return (
+  /*  return (
     <div>
       <Notification message={notifyMessage} className="notice" />
       <Notification message={errorMessage} className="error" />

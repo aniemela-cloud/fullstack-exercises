@@ -42,8 +42,8 @@ const Blog = ({ user, blog, updateLike, deleteBlog }) => {
         <div className="blog_url">URL: <a href={blog.url}>{blog.url}</a></div>
         <div className="blog_likes">Likes: {likes}
           {user && (<button name="like" onClick={onLike}>like</button>)}</div>
-        <div className="blog_user"><em>({blog.user.name})</em></div>
-        {user && user.name === blog.user.name && (
+        <div className="blog_user"><em>({blog.user ? blog.user.name : 'missing information'})</em></div>
+        {user && blog.user && user.username === blog.user.username && (
           <div className="blog_delete">
             <button name="delete" onClick={onDelete}>DELETE</button>
           </div>
