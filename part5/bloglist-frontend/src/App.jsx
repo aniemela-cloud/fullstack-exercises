@@ -62,6 +62,8 @@ const App = () => {
       setUsername('')
       setPassword('')
       navigate('/')
+      setNotifyMessage(`${userInfo.name} logged in.`)
+      setTimeout(() => setNotifyMessage(null), 5000)
       //return redirect('/')
     } catch(error) {
       setErrorMessage('Login failed. Check username/password.')
