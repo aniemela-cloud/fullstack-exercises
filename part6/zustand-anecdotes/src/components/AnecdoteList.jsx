@@ -4,6 +4,7 @@ const AnecdoteList = () => {
   const anecdotes = useAnecdotes()
   const { addVote } = useAnecdoteActions()
 
+  console.log(anecdotes)
   return (
     <div>
       {anecdotes.map(anecdote => (
