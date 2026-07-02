@@ -24,4 +24,19 @@ const createNew = async (content) => {
   return await response.json()
 }
 
-export default { getAll, createNew }
+const updateVotes = async ({id, votes}) => {
+  const response = await fetch(`${baseUrl}/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type' : 'application/json' },
+    body: JSON.stringify({ votes: votes })
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to create note')
+  }
+
+  return await response.json()
+
+}
+
+export default { getAll, createNew, updateVotes }

@@ -1,31 +1,27 @@
 
 import { create } from 'zustand'
+import anecdoteService from './services/anecdotes'
 
-const getId = () => (100000 * Math.random()).toFixed(0)
-
-const asObject = anecdote => ({
-  content: anecdote,
-  id: getId(),
-  votes: 0
-})
-
-const useAnecdoteStore = create((set) => ({
+const useAnecdoteStore = create((set, get) => ({
   anecdotes: [],
   filter: "",
-/*
+  /*
+    actions: {
+  }
+  */
   actions: {
-}
-*/
-  actions: {
-    addVote: id => set(
-      state => ({
+    addVote: async (id) => {
+      const anecdote = get().anecdotes.find(a => a.id === id)
+      const updated = await anecdoteService.updateVotes({ ...anecdote, votes: anecdote.votes + 1 })
+      set(state => ({
         anecdotes: state.anecdotes.map(anecdote =>
-          anecdote.id === id ? { ...anecdote, votes: anecdote.votes + 1 } : anecdote
-        ).sort((a,b) => b.votes - a.votes) 
+          anecdote.id === id ? { ...anecdote, votes: updated.votes } : anecdote
+        ).sort((a, b) => b.votes - a.votes)
         // we're applying sort() to the array created by .map(), which is a copy of
         // the original state.anecdotes array
       })
-    ),
+      )
+    },
     addNew: anecdote => set(
       state => ({
         anecdotes: state.anecdotes.concat(anecdote)
@@ -41,9 +37,9 @@ const useAnecdoteStore = create((set) => ({
 export const useAnecdotes = () => {
   const anecdotes = useAnecdoteStore((state) => state.anecdotes)
   const filter = useAnecdoteStore((state) => state.filter)
-  console.log('in useAnecdotes:',anecdotes)
+  console.log('in useAnecdotes:', anecdotes)
   return anecdotes ? anecdotes.filter(
-    (anecdote) => 
+    (anecdote) =>
       (anecdote.content.toLowerCase().includes(filter.toLowerCase()))
   ) : []
 }
