@@ -1,26 +1,28 @@
 import { useAnecdoteActions } from '../store'
+import anecdoteService from '../services/anecdotes'
 
 const AnecdoteForm = () => {
-    const { addNew } = useAnecdoteActions()
+  const { addNew } = useAnecdoteActions()
 
-    const addAnecdote = (event) => {
-        event.preventDefault()
-        const aText = event.target.anecdote.value
-        addNew(aText)
-        event.target.reset()
-    }
+  const addAnecdote = async (event) => {
+    event.preventDefault()
+    const content = event.target.anecdote.value
+    const newAnecdote = await anecdoteService.createNew(content)
+    addNew(newAnecdote)
+    event.target.reset()
+  }
 
-    return (
+  return (
+    <div>
+      <h2>create new</h2>
+      <form onSubmit={addAnecdote}>
         <div>
-            <h2>create new</h2>
-            <form onSubmit={addAnecdote}>
-                <div>
-                    <input name="anecdote" />
-                </div>
-                <button>create</button>
-            </form>
+          <input name="anecdote" />
         </div>
-    )
+        <button>create</button>
+      </form>
+    </div>
+  )
 }
 
 export default AnecdoteForm

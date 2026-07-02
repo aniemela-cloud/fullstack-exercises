@@ -29,6 +29,27 @@
       "content": "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
       "id": "74359",
       "votes": 0
+    },
+    {
+      "content": "Testing is besting",
+      "votes": 0,
+      "id": "TTo42uaiIZg"
+    },
+    {
+      "content": "This is a saved anecdote. JSON DB POWER.",
+      "votes": 0,
+      "id": "E8qhwBLkk4E"
+    },
+    {
+      "content": "This breaks something.",
+      "votes": 0,
+      "id": "kiAlPvUHy1M"
+    },
+    {
+      "content": "This should work now.",
+      "votes": 0,
+      "id": "PNxDLqO3riw"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

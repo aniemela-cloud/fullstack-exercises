@@ -28,7 +28,7 @@ const useAnecdoteStore = create((set) => ({
     ),
     addNew: anecdote => set(
       state => ({
-        anecdotes: state.anecdotes.concat(asObject(anecdote))
+        anecdotes: state.anecdotes.concat(anecdote)
       })
     ),
     setFilter: value => set(
@@ -41,10 +41,11 @@ const useAnecdoteStore = create((set) => ({
 export const useAnecdotes = () => {
   const anecdotes = useAnecdoteStore((state) => state.anecdotes)
   const filter = useAnecdoteStore((state) => state.filter)
-  return anecdotes.filter(
+  console.log('in useAnecdotes:',anecdotes)
+  return anecdotes ? anecdotes.filter(
     (anecdote) => 
       (anecdote.content.toLowerCase().includes(filter.toLowerCase()))
-  )
+  ) : []
 }
 export const useFilter = () => useAnecdoteStore((state) => state.filter)
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
