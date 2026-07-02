@@ -29,7 +29,9 @@ const useAnecdoteStore = create((set) => ({
       state => ({
         anecdotes: state.anecdotes.map(anecdote =>
           anecdote.id === id ? { ...anecdote, votes: anecdote.votes + 1 } : anecdote
-        )
+        ).sort((a,b) => b.votes - a.votes) 
+        // we're applying sort() to the array created by .map(), which is a copy of
+        // the original state.anecdotes array
       })
     ),
     addNew: anecdote => set(
