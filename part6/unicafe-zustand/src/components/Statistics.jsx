@@ -1,10 +1,12 @@
+import { useFeedbackStore } from './store'
+
 const Statistics = () => {
-  const good = 0
-  const neutral = 0
-  const bad = 0
-  const all = 0
-  const average = 0
-  const positive = 0
+  const good = useFeedbackStore(state => state.good)
+  const neutral = useFeedbackStore(state => state.neutral)
+  const bad = useFeedbackStore(state => state.bad)
+  const all = useFeedbackStore(state => state.counter)
+  const average = all ? (good - bad) / all : 0
+  const positive = all ? `${(good * 100 / all).toFixed(2)} %` : '(no feedback yet)'
   
   return (
     <div>
