@@ -1,5 +1,6 @@
 
 import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
 import anecdoteService from './services/anecdotes'
 
 const useNotificationStore = create ((set) => ({
@@ -9,7 +10,7 @@ const useNotificationStore = create ((set) => ({
   }
 }))
 
-const useAnecdoteStore = create((set, get) => ({
+const useAnecdoteStore = create(devtools((set, get) => ({
   anecdotes: [],
   filter: "",
   /*
@@ -46,9 +47,12 @@ const useAnecdoteStore = create((set, get) => ({
     setFilter: value => set(
       () => ({ filter: value })
     ),
-    initialize: anecdotes => set(() => ({ anecdotes }))
+    initialize: async () => {
+      const anecdotes = await anecdoteService.getAll() 
+      set(() => ({ anecdotes }))
+    }
   },
-}))
+})))
 
 export const useAnecdotes = () => {
   const anecdotes = useAnecdoteStore((state) => state.anecdotes)
@@ -64,3 +68,5 @@ export const useAnecdoteActions = () => useAnecdoteStore((state) => state.action
 
 export const useNotification = () => useNotificationStore((state) => state.message)
 export const useNotificationActions = () => useNotificationStore((state) => state.actions)
+
+export default useAnecdoteStore
