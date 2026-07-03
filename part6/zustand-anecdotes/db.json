@@ -49,11 +49,6 @@
       "content": "This should work now.",
       "votes": 4,
       "id": "PNxDLqO3riw"
-    },
-    {
-      "content": "I am an anecdote and I am new",
-      "votes": 0,
-      "id": "miYyEzHj0aU"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
