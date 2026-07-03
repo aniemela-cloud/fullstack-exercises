@@ -31,7 +31,7 @@ const AnecdoteList = () => {
     }
     return (
       <span>
-        <button onClick={() => handleDelete(anecdote)}>delete</button>
+        <button onClick={() => handleDelete(anecdote)} name="delete">delete</button>
       </span>
     )
   }
@@ -44,7 +44,7 @@ const AnecdoteList = () => {
           <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => handleVote(anecdote)}>vote</button>
+            <button onClick={() => handleVote(anecdote)} name="vote">vote</button>
             <DeleteButton anecdote={anecdote} />
           </div>
         </div>

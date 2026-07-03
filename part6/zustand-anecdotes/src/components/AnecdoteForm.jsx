@@ -25,7 +25,7 @@ const AnecdoteForm = () => {
         <div>
           <input name="anecdote" />
         </div>
-        <button>create</button>
+        <button name="create">create</button>
       </form>
     </div>
   )
