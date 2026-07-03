@@ -21,3 +21,17 @@ export const addAnecdote = async ({ content }) => {
 
   return await response.json()
 }
+
+export const updateVotes = async ({id, votes}) => {
+  const response = await fetch(`${baseUrl}/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type' : 'application/json' },
+    body: JSON.stringify({ votes: votes })
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update vote count')
+  }
+
+  return await response.json()
+}
