@@ -1,3 +1,5 @@
+// Adding a comment here so I can make a separate commit for exercise 6.22 that I
+// already did as part of 6.20.
 import { createContext, useState } from 'react'
 
 const NotificationContext = createContext()
