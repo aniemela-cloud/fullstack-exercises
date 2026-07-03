@@ -16,7 +16,13 @@ export const addAnecdote = async ({ content }) => {
   })
 
   if (!response.ok) {
-    throw new Error(`Failed to create anecdote: ${response.status} ${response.statusText}`)
+    console.log('response not ok', response)
+    const responseData = await response.json()
+    if(responseData && responseData.error) {
+      throw new Error(`Failed to create anecdote: ${responseData.error}`)
+    } else {
+      throw new Error(`Failed to create anecdote: ${response.status} ${response.statusText}`)
+    }
   }
 
   return await response.json()
