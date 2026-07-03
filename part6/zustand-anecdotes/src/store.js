@@ -2,6 +2,13 @@
 import { create } from 'zustand'
 import anecdoteService from './services/anecdotes'
 
+const useNotificationStore = create ((set) => ({
+  message: null,
+  actions: {
+    setMessage: (message) => set(() => ({ message }))
+  }
+}))
+
 const useAnecdoteStore = create((set, get) => ({
   anecdotes: [],
   filter: "",
@@ -45,3 +52,6 @@ export const useAnecdotes = () => {
 }
 export const useFilter = () => useAnecdoteStore((state) => state.filter)
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
+
+export const useNotification = () => useNotificationStore((state) => state.message)
+export const useNotificationActions = () => useNotificationStore((state) => state.actions)
