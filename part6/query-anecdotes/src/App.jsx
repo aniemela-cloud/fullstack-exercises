@@ -41,7 +41,7 @@ const App = () => {
   }
 
   const anecdotes = result.data
-
+  console.log('tanstack result', result.data)
   return (
     <div>
       <h3>Anecdote app</h3>
