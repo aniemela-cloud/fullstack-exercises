@@ -48,7 +48,8 @@ const useAnecdoteStore = create(devtools((set, get) => ({
       () => ({ filter: value })
     ),
     initialize: async () => {
-      const anecdotes = await anecdoteService.getAll() 
+      const fetchedAnecdotes = await anecdoteService.getAll()
+      const anecdotes = fetchedAnecdotes.toSorted((a, b) => b.votes - a.votes)
       set(() => ({ anecdotes }))
     }
   },
