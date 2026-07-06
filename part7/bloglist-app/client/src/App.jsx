@@ -212,6 +212,12 @@ const App = () => {
           <Route path="/newblog" element={
             <NewBlog newBlog={createBlog} />
           } />
+          <Route path="/*" element={
+            <div>
+              <h1>404 &mdash; Page not found.</h1>
+              <p>The page was not found on the server. Maybe there was something wrong with the link?</p>
+            </div>
+          } />
         </Routes>
       </ErrorBoundary>
     </Container>
