@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import Blog from "./Blog";
+import { useBlogs } from "../store";
 
-const BlogList = ({ blogs }) => {
+const BlogList = () => {
+  const blogs = useBlogs();
+  if (blogs === undefined) {
+    return null;
+  }
   return (
     <div>
       <h2>blogs</h2>

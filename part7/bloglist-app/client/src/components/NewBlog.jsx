@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   TextField,
   Button,
@@ -6,15 +7,26 @@ import {
   InputLabel,
   Stack,
 } from "@mui/material";
+import { useBlogActions, useNotificationActions } from "../store";
 
-const NewBlog = ({ newBlog }) => {
+const NewBlog = () => {
   const [newAuthor, setAuthor] = useState("");
   const [newTitle, setTitle] = useState("");
   const [newUrl, setUrl] = useState("");
 
+  const { addBlog } = useBlogActions();
+  const { setMessage } = useNotificationActions();
+
+  const navigate = useNavigate();
+
   const onSubmit = async (event) => {
     event.preventDefault();
-    newBlog({ author: newAuthor, title: newTitle, url: newUrl });
+    addBlog({ author: newAuthor, title: newTitle, url: newUrl });
+    setMessage({
+      text: `${newTitle} by ${newAuthor} added.`,
+      type: "success",
+    });
+    navigate("/");
     setAuthor("");
     setTitle("");
     setUrl("");

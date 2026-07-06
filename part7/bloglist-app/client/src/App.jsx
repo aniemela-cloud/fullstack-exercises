@@ -23,7 +23,7 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
-import { useNotificationActions } from "./store";
+import { useBlogActions, useNotificationActions } from "./store";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -32,6 +32,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   //const [message, setMessage] = useState(null);
   const { setMessage } = useNotificationActions();
+  const { initialize } = useBlogActions();
 
   //const newBlogTogglableRef = useRef()
   const navigate = useNavigate();
@@ -40,11 +41,8 @@ const App = () => {
   const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(blogs);
-    });
-  }, []);
+    initialize();
+  }, [initialize]);
 
   useEffect(() => {
     const storedUserJSON = window.localStorage.getItem("currentBlogUser");
@@ -100,20 +98,6 @@ const App = () => {
       }
       navigate("/");
     }
-  };
-
-  const createBlog = async (newBlogData) => {
-    console.log("createBlog got newBlogData:", newBlogData);
-    const blogdata = await blogService.create(newBlogData);
-    console.log("blogdata from blogService", blogdata);
-    setMessage({
-      text: `${blogdata.title} by ${blogdata.author} added.`,
-      type: "success",
-    });
-    setTimeout(() => setMessage(null), 5000);
-    setBlogs(blogs.concat(blogdata));
-    navigate("/");
-    //newBlogTogglableRef.current.toggleVisibility()
   };
 
   const updateLike = async ({ id, likes }) => {
@@ -236,7 +220,6 @@ const App = () => {
             index
             element={
               <BlogList
-                blogs={blogs}
                 handleBlogDelete={handleBlogDelete}
                 updateLike={updateLike}
               />
@@ -253,7 +236,7 @@ const App = () => {
               />
             }
           />
-          <Route path="/newblog" element={<NewBlog newBlog={createBlog} />} />
+          <Route path="/newblog" element={<NewBlog />} />
           <Route
             path="/*"
             element={
