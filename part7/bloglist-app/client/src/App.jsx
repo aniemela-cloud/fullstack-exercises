@@ -19,6 +19,8 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
@@ -175,20 +177,43 @@ const App = () => {
         </Toolbar>
       </AppBar>
       <div>
-        <Notification message={message} />
+        <ErrorBoundary
+          fallbackRender={({ error, resetErrorBoundary }) => (
+            <div role="alert">
+              <p>Error encountered in Notification:</p>
+              <pre>{getErrorMessage(error)}</pre>
+              <button onClick={resetErrorBoundary}>Try again</button>
+            </div>
+          )}
+          onReset={() => {
+            setMessage(null)
+          }}
+        >
+          <Notification message={message} />
+        </ErrorBoundary>
       </div>
-      <Routes>
-        <Route path="/login" element={loginForm()} />
-        <Route index element={
-          <BlogList blogs={blogs} handleBlogDelete={handleBlogDelete} updateLike={updateLike} />
-        } />
-        <Route path="/blogs/:id" element={
-          <Blog blog={blog} updateLike={updateLike} deleteBlog={handleBlogDelete} user={user} />
-        } />
-        <Route path="/newblog" element={
-          <NewBlog newBlog={createBlog} />
-        } />
-      </Routes>
+      <ErrorBoundary
+        fallbackRender={({ error, resetErrorBoundary }) => (
+          <div role="alert">
+            <p>Error encountered in Routes:</p>
+            <pre>{getErrorMessage(error)}</pre>
+            <button onClick={resetErrorBoundary}>Try again</button>
+          </div>
+        )}
+      >
+        <Routes>
+          <Route path="/login" element={loginForm()} />
+          <Route index element={
+            <BlogList blogs={blogs} handleBlogDelete={handleBlogDelete} updateLike={updateLike} />
+          } />
+          <Route path="/blogs/:id" element={
+            <Blog blog={blog} updateLike={updateLike} deleteBlog={handleBlogDelete} user={user} />
+          } />
+          <Route path="/newblog" element={
+            <NewBlog newBlog={createBlog} />
+          } />
+        </Routes>
+      </ErrorBoundary>
     </Container>
   )
 }
