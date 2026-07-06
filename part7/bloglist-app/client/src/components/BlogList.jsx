@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import Blog from './Blog'
+import { Link } from "react-router-dom";
+import Blog from "./Blog";
 
 const BlogList = ({ blogs }) => {
   return (
@@ -12,12 +12,14 @@ const BlogList = ({ blogs }) => {
           //return (<Blog key={blog.id} blog={blog} updateLike={updateLike} deleteBlog={deleteBlog}/>)
           return (
             <li key={blog.id}>
-              <Link to={`blogs/${blog.id}`}>{blog.title} by {blog.author}</Link>
+              <Link to={`blogs/${blog.id}`}>
+                {blog.title} by {blog.author}
+              </Link>
             </li>
-          )
+          );
         })}
       </ul>
     </div>
-  )
-}
-export default BlogList
+  );
+};
+export default BlogList;

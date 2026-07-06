@@ -1,14 +1,10 @@
-import { Alert } from '@mui/material'
+import { Alert } from "@mui/material";
 
 const Notification = ({ message }) => {
   if (message === null || message === undefined) {
-    return null
+    return null;
   }
-  return (
-    <Alert severity={message.type}>
-      {message.text}
-    </Alert>
-  )
-}
+  return <Alert severity={message.type}>{message.text}</Alert>;
+};
 
-export default Notification
+export default Notification;
