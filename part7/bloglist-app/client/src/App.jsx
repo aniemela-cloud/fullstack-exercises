@@ -26,19 +26,18 @@ import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
 import { useBlogActions, useNotificationActions } from "./store";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   //const [message, setMessage] = useState(null);
   const { setMessage } = useNotificationActions();
-  const { initialize } = useBlogActions();
+  const { initialize, deleteBlog, getBlog, updateLike } = useBlogActions();
 
   //const newBlogTogglableRef = useRef()
   const navigate = useNavigate();
 
   const match = useMatch("/blogs/:id");
-  const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
+  const blog = match ? getBlog(match.params.id) : null;
 
   useEffect(() => {
     initialize();
@@ -67,14 +66,12 @@ const App = () => {
       setPassword("");
       navigate("/");
       setMessage({ text: `${userInfo.name} logged in.`, type: "success" });
-      setTimeout(() => setMessage(null), 5000);
       //return redirect('/')
     } catch (error) {
       setMessage({
         text: "Login failed. Check username/password.",
         type: "error",
       });
-      setTimeout(() => setMessage(null), 5000);
       setUsername("");
       setPassword("");
       console.error("caught error ", error);
@@ -91,20 +88,14 @@ const App = () => {
   const handleBlogDelete = async (blog) => {
     console.log("delete handler for ", blog);
     if (window.confirm(`Really delete ${blog.title} by ${blog.author}?`)) {
-      const result = await blogService.deleteBlog(blog);
-      if (result && result.status === 204) {
-        const filteredBlogs = blogs.filter((b) => b.id !== blog.id);
-        setBlogs(filteredBlogs);
-      }
+      deleteBlog(blog);
       navigate("/");
     }
   };
 
-  const updateLike = async ({ id, likes }) => {
+  const handleLike = async ({ id, likes }) => {
     console.log("updating likes for", id, "to", likes);
-    await blogService.update({ id, likes });
-    const resortedBlogs = blogs.toSorted((a, b) => b.likes - a.likes);
-    setBlogs(resortedBlogs);
+    updateLike({ id, likes });
   };
 
   const loginForm = () => (
@@ -138,24 +129,7 @@ const App = () => {
       </div>
     </form>
   );
-  /*  return (
-    <div>
-      <Notification message={notifyMessage} className="notice" />
-      <Notification message={errorMessage} className="error" />
-      {!user && loginForm()}
-      {user && (
-        <div>
-          <p>{user.name} logged in <button onClick={handleLogout} name="logout">logout</button></p>
-          <Togglable buttonLabel='Add a blog' ref={newBlogTogglableRef}>
-            <NewBlog
-              newBlog={createBlog}
-            />
-          </Togglable>
-          {blogList()}
-        </div>
-      )}
-    </div>
-  ) */
+
   const style = { "&:hover": { bgcolor: "rgba(255,255,255,0.3)" } };
   return (
     <Container>
@@ -218,19 +192,14 @@ const App = () => {
           <Route path="/login" element={loginForm()} />
           <Route
             index
-            element={
-              <BlogList
-                handleBlogDelete={handleBlogDelete}
-                updateLike={updateLike}
-              />
-            }
+            element={<BlogList handleBlogDelete={handleBlogDelete} />}
           />
           <Route
             path="/blogs/:id"
             element={
               <Blog
                 blog={blog}
-                updateLike={updateLike}
+                updateLike={handleLike}
                 deleteBlog={handleBlogDelete}
                 user={user}
               />

@@ -9,6 +9,7 @@ const Blog = ({ user, blog, updateLike, deleteBlog }) => {
   //const showWhenVisible = { display: visible ? '' : 'none' }
   const navigate = useNavigate();
 
+  console.log("Blog: ", blog);
   useEffect(() => {
     if (!blog) {
       navigate("/");
