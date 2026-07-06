@@ -23,13 +23,15 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
+import { useNotificationActions } from "./store";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState(null);
+  //const [message, setMessage] = useState(null);
+  const { setMessage } = useNotificationActions();
 
   //const newBlogTogglableRef = useRef()
   const navigate = useNavigate();
@@ -216,7 +218,7 @@ const App = () => {
             setMessage(null);
           }}
         >
-          <Notification message={message} />
+          <Notification />
         </ErrorBoundary>
       </div>
       <ErrorBoundary
