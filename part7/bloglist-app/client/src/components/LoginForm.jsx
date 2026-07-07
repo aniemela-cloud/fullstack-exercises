@@ -4,7 +4,14 @@ import persistService from "../services/persistentUser";
 
 import { useNavigate } from "react-router-dom";
 
-import { TextField, Button, FormControl } from "@mui/material";
+import {
+  TextField,
+  Button,
+  FormControl,
+  Paper,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useNotificationActions, useUserActions } from "../store";
 import useField from "../hooks/useField";
 
@@ -43,39 +50,41 @@ const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleLogin} onReset={handleReset}>
-      <div>
-        <h2>Login to BlogList</h2>
-      </div>
-      <FormControl>
-        <TextField
-          label="Username"
-          name="username"
-          autoComplete="username"
-          onChange={username.onChange}
-          value={username.value}
-          type={username.type}
-        />
-      </FormControl>
-      <FormControl>
-        <TextField
-          label="Password"
-          name="password"
-          autoComplete="current-password"
-          type={password.type}
-          value={password.value}
-          onChange={password.onChange}
-        />
-      </FormControl>
-      <div>
-        <Button type="submit" variant="contained">
-          login
-        </Button>
-        <Button type="reset" variant="contained">
-          clear
-        </Button>
-      </div>
-    </form>
+    <Paper sx={{ p: 2 }}>
+      <form onSubmit={handleLogin} onReset={handleReset}>
+        <Typography variant="h2">Login to BlogList</Typography>
+        <Stack sx={{ width: "50%" }}>
+          <FormControl>
+            <TextField
+              label="Username"
+              name="username"
+              autoComplete="username"
+              onChange={username.onChange}
+              value={username.value}
+              type={username.type}
+            />
+          </FormControl>
+          <FormControl>
+            <TextField
+              label="Password"
+              name="password"
+              autoComplete="current-password"
+              type={password.type}
+              value={password.value}
+              onChange={password.onChange}
+            />
+          </FormControl>
+        </Stack>
+        <div>
+          <Button type="submit" variant="contained">
+            login
+          </Button>
+          <Button type="reset" variant="contained">
+            clear
+          </Button>
+        </div>
+      </form>
+    </Paper>
   );
 };
 

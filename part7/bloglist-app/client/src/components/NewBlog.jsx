@@ -5,6 +5,7 @@ import {
   FormControl,
   InputLabel,
   Stack,
+  Paper,
 } from "@mui/material";
 import { useBlogActions, useNotificationActions } from "../store";
 import useField from "../hooks/useField";
@@ -44,48 +45,50 @@ const NewBlog = () => {
   };
 
   return (
-    <Stack>
-      <form onSubmit={onSubmit} onReset={onReset}>
-        <h2>Add New Blog</h2>
-        <Stack spacing={2}>
-          <div>
-            <TextField
-              sx={{ width: "50%" }}
-              label="Author"
-              type={newAuthor.type}
-              name="author"
-              size="small"
-              onChange={newAuthor.onChange}
-              value={newAuthor.value}
-            />
-          </div>
-          <div>
-            <TextField
-              sx={{ width: "50%" }}
-              label="Blog title"
-              type={newTitle.type}
-              size="small"
-              onChange={newTitle.onChange}
-              value={newTitle.value}
-            />
-          </div>
-          <div>
-            <TextField
-              sx={{ width: "50%" }}
-              label="URL"
-              type={newUrl.type}
-              size="small"
-              onChange={newUrl.onChange}
-              value={newUrl.value}
-            />
-          </div>
-          <div>
-            <Button type="submit">Add Blog</Button>
-            <Button type="reset">Clear</Button>
-          </div>
-        </Stack>
-      </form>
-    </Stack>
+    <Paper sx={{ p: 2 }}>
+      <Stack>
+        <form onSubmit={onSubmit} onReset={onReset}>
+          <h2>Add New Blog</h2>
+          <Stack spacing={2}>
+            <div>
+              <TextField
+                sx={{ width: "50%" }}
+                label="Author"
+                type={newAuthor.type}
+                name="author"
+                size="small"
+                onChange={newAuthor.onChange}
+                value={newAuthor.value}
+              />
+            </div>
+            <div>
+              <TextField
+                sx={{ width: "50%" }}
+                label="Blog title"
+                type={newTitle.type}
+                size="small"
+                onChange={newTitle.onChange}
+                value={newTitle.value}
+              />
+            </div>
+            <div>
+              <TextField
+                sx={{ width: "50%" }}
+                label="URL"
+                type={newUrl.type}
+                size="small"
+                onChange={newUrl.onChange}
+                value={newUrl.value}
+              />
+            </div>
+            <div>
+              <Button type="submit">Add Blog</Button>
+              <Button type="reset">Clear</Button>
+            </div>
+          </Stack>
+        </form>
+      </Stack>
+    </Paper>
   );
 };
 
