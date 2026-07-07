@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useUser, useBlogActions } from "../store";
 
 import { Box, Typography, Stack, Link, Button, Divider } from "@mui/material";
-const Blog = ({ blog, updateLike }) => {
+const Blog = ({ blog }) => {
   const [likes, setLikes] = useState(blog ? blog.likes : 0);
   const navigate = useNavigate();
   const user = useUser();
-  const { deleteBlog } = useBlogActions();
+  const { updateLike, deleteBlog } = useBlogActions();
 
   console.log("Blog: ", blog);
   useEffect(() => {
@@ -16,7 +16,7 @@ const Blog = ({ blog, updateLike }) => {
     }
   }, [blog, navigate]);
 
-  const onLike = () => {
+  const handleBlogLike = () => {
     blog.likes += 1;
     setLikes(blog.likes);
     updateLike({ id: blog.id, likes: blog.likes });
@@ -56,7 +56,7 @@ const Blog = ({ blog, updateLike }) => {
                 variant="outlined"
                 name="like"
                 color="secondary"
-                onClick={onLike}
+                onClick={handleBlogLike}
               >
                 like
               </Button>

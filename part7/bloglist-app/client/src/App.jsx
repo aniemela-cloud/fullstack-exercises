@@ -21,7 +21,7 @@ import {
 
 const App = () => {
   const { setMessage } = useNotificationActions();
-  const { initialize, getBlog, updateLike } = useBlogActions();
+  const { initialize, getBlog } = useBlogActions();
   const { setUser } = useUserActions();
   const user = useUser();
 
@@ -50,12 +50,12 @@ const App = () => {
     blogService.setToken(null);
     window.localStorage.removeItem("currentBlogUser");
   };
-
+  /* 
   const handleLike = async ({ id, likes }) => {
     console.log("updating likes for", id, "to", likes);
     updateLike({ id, likes });
   };
-
+ */
   const style = { "&:hover": { bgcolor: "rgba(255,255,255,0.3)" } };
   return (
     <Container>
@@ -117,10 +117,7 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<LoginForm />} />
           <Route index element={<BlogList />} />
-          <Route
-            path="/blogs/:id"
-            element={<Blog blog={blog} updateLike={handleLike} />}
-          />
+          <Route path="/blogs/:id" element={<Blog blog={blog} />} />
           <Route path="/newblog" element={<NewBlog />} />
           <Route
             path="/*"
