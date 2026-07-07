@@ -28,9 +28,6 @@ const UserList = () => {
           </TableHead>
           <TableBody>
             {users.map((user) => {
-              //console.log('blogList map: user:',user,'blog',blog)
-              //const deleteBlog = (user && user.username === blog.user.username ? handleBlogDelete : undefined)
-              //return (<Blog key={blog.id} blog={blog} updateLike={updateLike} deleteBlog={deleteBlog}/>)
               return (
                 <TableRow key={user.id}>
                   <TableCell>
