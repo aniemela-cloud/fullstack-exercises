@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   TextField,
@@ -8,11 +7,12 @@ import {
   Stack,
 } from "@mui/material";
 import { useBlogActions, useNotificationActions } from "../store";
+import useField from "../hooks/useField";
 
 const NewBlog = () => {
-  const [newAuthor, setAuthor] = useState("");
-  const [newTitle, setTitle] = useState("");
-  const [newUrl, setUrl] = useState("");
+  const newAuthor = useField("text");
+  const newTitle = useField("text");
+  const newUrl = useField("text");
 
   const { addBlog } = useBlogActions();
   const { setMessage } = useNotificationActions();
@@ -21,55 +21,67 @@ const NewBlog = () => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    addBlog({ author: newAuthor, title: newTitle, url: newUrl });
+    addBlog({
+      author: newAuthor.value,
+      title: newTitle.value,
+      url: newUrl.value,
+    });
     setMessage({
-      text: `${newTitle} by ${newAuthor} added.`,
+      text: `${newTitle.value} by ${newAuthor.value} added.`,
       type: "success",
     });
     navigate("/");
-    setAuthor("");
-    setTitle("");
-    setUrl("");
+    newAuthor.reset();
+    newTitle.reset();
+    newUrl.reset();
+  };
+
+  const onReset = (event) => {
+    event.preventDefault();
+    newAuthor.reset();
+    newTitle.reset();
+    newUrl.reset();
   };
 
   return (
     <Stack>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} onReset={onReset}>
         <h2>Add New Blog</h2>
         <Stack spacing={2}>
           <div>
             <TextField
               sx={{ width: "50%" }}
               label="Author"
-              type="text"
+              type={newAuthor.type}
               name="author"
               size="small"
-              onChange={({ target }) => setAuthor(target.value)}
-              value={newAuthor}
+              onChange={newAuthor.onChange}
+              value={newAuthor.value}
             />
           </div>
           <div>
             <TextField
               sx={{ width: "50%" }}
               label="Blog title"
-              type="text"
+              type={newTitle.type}
               size="small"
-              onChange={({ target }) => setTitle(target.value)}
-              value={newTitle}
+              onChange={newTitle.onChange}
+              value={newTitle.value}
             />
           </div>
           <div>
             <TextField
               sx={{ width: "50%" }}
               label="URL"
-              type="text"
+              type={newUrl.type}
               size="small"
-              onChange={({ target }) => setUrl(target.value)}
-              value={newUrl}
+              onChange={newUrl.onChange}
+              value={newUrl.value}
             />
           </div>
           <div>
             <Button type="submit">Add Blog</Button>
+            <Button type="reset">Clear</Button>
           </div>
         </Stack>
       </form>
