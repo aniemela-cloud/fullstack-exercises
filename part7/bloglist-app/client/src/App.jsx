@@ -10,6 +10,7 @@ import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 
 import blogService from "./services/blogs";
+import persistService from "./services/persistentUser";
 
 import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
 import {
@@ -33,14 +34,11 @@ const App = () => {
   }, [initialize]);
 
   useEffect(() => {
-    const storedUserJSON = window.localStorage.getItem("currentBlogUser");
+    const storedUser = persistService.getUser();
     console.log("storedUser effect called");
-    if (storedUserJSON) {
-      const storedUser = JSON.parse(storedUserJSON);
-      if (storedUser && storedUser.token) {
-        setUser(storedUser);
-        blogService.setToken(storedUser.token);
-      }
+    if (storedUser && storedUser.token) {
+      setUser(storedUser);
+      blogService.setToken(storedUser.token);
     }
   }, [setUser]);
 
@@ -48,7 +46,7 @@ const App = () => {
     event.preventDefault();
     setUser(null);
     blogService.setToken(null);
-    window.localStorage.removeItem("currentBlogUser");
+    persistService.removeUser();
   };
   /* 
   const handleLike = async ({ id, likes }) => {
