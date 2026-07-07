@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser, useBlogActions } from "../store";
-
+import useField from "../hooks/useField";
 import {
   Box,
   Typography,
@@ -10,14 +10,19 @@ import {
   Button,
   Divider,
   Paper,
+  TextField,
+  List,
+  ListItem,
 } from "@mui/material";
 const Blog = ({ blog }) => {
   const [likes, setLikes] = useState(blog ? blog.likes : 0);
+  const [comments, setComments] = useState(blog ? blog.comments : []);
+  const newComment = useField("text");
   const navigate = useNavigate();
   const user = useUser();
-  const { updateLike, deleteBlog } = useBlogActions();
+  const { updateLike, deleteBlog, addComment } = useBlogActions();
 
-  console.log("Blog: ", blog);
+  //console.log("Blog: ", blog);
   useEffect(() => {
     if (!blog) {
       navigate("/");
@@ -38,10 +43,17 @@ const Blog = ({ blog }) => {
     }
   };
 
+  const handleComment = async () => {
+    console.log("handleComment called");
+    addComment({ id: blog.id, comment: newComment.value });
+    setComments(comments.concat(newComment.value));
+    newComment.reset();
+  };
+
   if (blog) {
     return (
-      <Paper>
-        <Box className="blog" sx={{ m: 2 }}>
+      <Paper sx={{ p: 2 }}>
+        <Box className="blog">
           <Typography variant="h4" className="blog_title">
             {blog.title}
           </Typography>
@@ -83,14 +95,34 @@ const Blog = ({ blog }) => {
             </Stack>
             <div className="blog_comments">
               <Typography variant="h5">Comments</Typography>
-              {blog.comments &&
-                blog.comments.length > 0 &&
-                blog.comments.map((comment) => {
-                  return <p>{comment}</p>;
-                })}
-              {(!blog.comments || blog.comments.length < 1) && (
-                <Typography variant="body1">No comments yet.</Typography>
+              {user && (
+                <Stack direction="row">
+                  <TextField
+                    label="New comment"
+                    type={newComment.type}
+                    size="small"
+                    onChange={newComment.onChange}
+                    value={newComment.value}
+                  />
+                  <Button name="comment" onClick={handleComment}>
+                    Add comment
+                  </Button>
+                </Stack>
               )}
+              <List>
+                {comments &&
+                  comments.length > 0 &&
+                  comments.map((comment, idx) => {
+                    return (
+                      <ListItem key={idx} variant="body2">
+                        {comment}
+                      </ListItem>
+                    );
+                  })}
+                {(!comments || comments.length < 1) && (
+                  <ListItem variant="body1">No comments yet.</ListItem>
+                )}
+              </List>
             </div>
           </Stack>
         </Box>

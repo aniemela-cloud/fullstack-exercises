@@ -53,11 +53,22 @@ const useBlogStore = create((set, get) => ({
       const theBlog = get().blogs.find((b) => b.id === blog_id);
       return theBlog;
     },
-
+    // NB: The actual updating of likes for the blog object stored in the...
+    // store is done during the event handler for the like button press.
+    // TODO: Should move the functionality here, it is strange to have it
+    // happen in a display component and then just use the store to
+    // actually update the number of likes in the backend (and do a sort)
     updateLike: async ({ id, likes }) => {
       await blogService.update({ id, likes });
       set((state) => ({
         blogs: state.blogs.toSorted((a, b) => b.likes - a.likes),
+      }));
+    },
+
+    addComment: async ({ id, comment }) => {
+      const updatedBlog = await blogService.addComment({ id, comment });
+      set((state) => ({
+        blogs: state.blogs.map((blog) => (blog.id === id ? updatedBlog : blog)),
       }));
     },
   },

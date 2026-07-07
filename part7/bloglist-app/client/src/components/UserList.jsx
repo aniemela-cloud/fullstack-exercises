@@ -7,6 +7,7 @@ import {
   TableRow,
   TableCell,
   Paper,
+  Typography,
 } from "@mui/material";
 import { useEffect } from "react";
 import userService from "../services/users";
@@ -16,10 +17,10 @@ const UserList = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    console.log("in useEffect of UserList");
+    //console.log("in useEffect of UserList");
     async function loadUsers() {
       const loadedUsers = await userService.getAll();
-      console.log("async loadUsers()", loadedUsers);
+      //console.log("async loadUsers()", loadedUsers);
       if (loadedUsers) {
         setUsers(loadedUsers);
       }
@@ -28,15 +29,15 @@ const UserList = () => {
   }, [setUsers]);
   if (!users || users.length < 1) {
     return (
-      <div>
-        <h2>Users</h2>
-        <div>No registered users.</div>
-      </div>
+      <Paper sx={{ p: 2 }}>
+        <Typography variant="h2">Users</Typography>
+        <Typography>No registered users loaded...</Typography>
+      </Paper>
     );
   }
   return (
-    <div>
-      <h2>Users</h2>
+    <Paper sx={{ p: 2 }}>
+      <Typography variant="h2">Users</Typography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -61,7 +62,7 @@ const UserList = () => {
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </Paper>
   );
 };
 export default UserList;

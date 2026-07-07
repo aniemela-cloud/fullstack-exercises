@@ -64,4 +64,31 @@ const deleteBlog = async (blogObject) => {
   return response;
 };
 
-export default { getAll, create, setToken, update, deleteBlog };
+const addComment = async ({ id, comment }) => {
+  const config = {
+    headers: { Authorization: userToken },
+  };
+  if (!id) {
+    console.error(
+      "blogs service: addComment called with no id set in arguments",
+    );
+    return;
+  }
+  if (!comment) {
+    console.error(
+      "blogs service: addComment called with no comment set in arguments",
+    );
+    return;
+  }
+  const commentObject = {
+    content: comment.toString(),
+  };
+  const response = await axios.post(
+    `${baseUrl}/${id}/comments`,
+    commentObject,
+    config,
+  );
+  return response.data;
+};
+
+export default { getAll, create, setToken, update, deleteBlog, addComment };
