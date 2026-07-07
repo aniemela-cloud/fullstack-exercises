@@ -8,6 +8,7 @@ import BlogList from "./components/BlogList";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
+import UserList from "./components/UserList";
 
 import blogService from "./services/blogs";
 import persistService from "./services/persistentUser";
@@ -65,6 +66,9 @@ const App = () => {
           <Button color="inherit" component={Link} sx={style} to="/">
             Home
           </Button>
+          <Button color="inherit" component={Link} sx={style} to="/users">
+            User list
+          </Button>
           {!user && (
             <Button color="inherit" component={Link} sx={style} to="/login">
               Login
@@ -117,6 +121,7 @@ const App = () => {
           <Route index element={<BlogList />} />
           <Route path="/blogs/:id" element={<Blog blog={blog} />} />
           <Route path="/newblog" element={<NewBlog />} />
+          <Route path="/users" element={<UserList />} />
           <Route
             path="/*"
             element={
