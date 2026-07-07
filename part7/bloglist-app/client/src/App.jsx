@@ -2,16 +2,7 @@ import { useEffect } from "react";
 import { Routes, Route, Link, useMatch } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-import {
-  Container,
-  TextField,
-  Button,
-  FormControl,
-  InputLabel,
-  AppBar,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Container, Button, AppBar, Toolbar, Typography } from "@mui/material";
 
 import Blog from "./components/Blog";
 import BlogList from "./components/BlogList";
@@ -35,7 +26,6 @@ const App = () => {
   const { setUser } = useUserActions();
   const user = useUser();
 
-  //const newBlogTogglableRef = useRef()
   const navigate = useNavigate();
 
   const match = useMatch("/blogs/:id");
