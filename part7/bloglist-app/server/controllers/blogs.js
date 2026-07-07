@@ -149,4 +149,64 @@ blogRouter.patch("/:id", async (request, response) => {
   }
 });
 
+blogRouter.post("/:id/comments", userExtractor, async (request, response) => {
+  const comment_data = request.body;
+  const user = request.user;
+  if (!user) {
+    return response.status(401).json({
+      error: "you must be logged in to post",
+    });
+  }
+  if (!comment_data) {
+    return response.status(400).json({
+      error: "empty request body",
+    });
+  }
+  if (typeof comment_data !== "object") {
+    return response.status(400).json({
+      error: "malformed request body",
+    });
+  }
+  if (!comment_data.content) {
+    return response.status(400).json({
+      error: "content field missing",
+    });
+  }
+  const blogpost = await Blog.findById(request.params.id).populate("user", {
+    username: 1,
+    name: 1,
+    _id: 1,
+  });
+  if (!blogpost) {
+    return response.status(404).end();
+  } else {
+    blogpost.comments = blogpost.comments.concat(comment_data.content);
+    await blogpost.save();
+    return response.json(blogpost);
+  }
+
+  const blog = new Blog({
+    author: blogpost_data.author,
+    title: blogpost_data.title,
+    url: blogpost_data.url,
+    likes: blogpost_data.likes ? blogpost_data.likes : 0,
+    user: user._id,
+  });
+  await blog.save();
+  const result = await Blog.findOne({ _id: blog._id }).populate("user", {
+    username: 1,
+    name: 1,
+    _id: 1,
+  });
+  if (!user.blogs) {
+    user.blogs = [];
+  }
+  user.blogs = user.blogs.concat(blog._id);
+  await user.save();
+  return response.status(201).json(result);
+  /*  blog.save().then((result) => {
+      response.status(201).json(result)
+    }) */
+});
+
 module.exports = blogRouter;
