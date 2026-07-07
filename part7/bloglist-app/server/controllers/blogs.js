@@ -15,7 +15,11 @@ blogRouter.get("/", async (request, response) => {
 });
 
 blogRouter.get("/:id", async (request, response) => {
-  const blogpost = await Blog.findById(request.params.id);
+  const blogpost = await Blog.findById(request.params.id).populate("user", {
+    username: 1,
+    name: 1,
+    _id: 1,
+  });
   if (!blogpost) {
     return response.status(404).end();
   } else {
