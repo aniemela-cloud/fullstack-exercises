@@ -4,10 +4,7 @@ import { useUser, useBlogActions } from "../store";
 
 import { Box, Typography, Stack, Link, Button, Divider } from "@mui/material";
 const Blog = ({ blog, updateLike }) => {
-  //const [visible, setVisible] = useState(false)
   const [likes, setLikes] = useState(blog ? blog.likes : 0);
-  //const hideWhenVisible = { display: visible ? 'none' : '' }
-  //const showWhenVisible = { display: visible ? '' : 'none' }
   const navigate = useNavigate();
   const user = useUser();
   const { deleteBlog } = useBlogActions();
@@ -18,10 +15,6 @@ const Blog = ({ blog, updateLike }) => {
       navigate("/");
     }
   }, [blog, navigate]);
-
-  // const toggleVisibility = () => {
-  //   setVisible(!visible)
-  // }
 
   const onLike = () => {
     blog.likes += 1;

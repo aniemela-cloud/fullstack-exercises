@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Routes, Route, Link, useMatch } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 import { Container, Button, AppBar, Toolbar, Typography } from "@mui/material";
 
@@ -22,11 +21,9 @@ import {
 
 const App = () => {
   const { setMessage } = useNotificationActions();
-  const { initialize, deleteBlog, getBlog, updateLike } = useBlogActions();
+  const { initialize, getBlog, updateLike } = useBlogActions();
   const { setUser } = useUserActions();
   const user = useUser();
-
-  const navigate = useNavigate();
 
   const match = useMatch("/blogs/:id");
   const blog = match ? getBlog(match.params.id) : null;
@@ -52,14 +49,6 @@ const App = () => {
     setUser(null);
     blogService.setToken(null);
     window.localStorage.removeItem("currentBlogUser");
-  };
-
-  const handleBlogDelete = async (blog) => {
-    console.log("delete handler for ", blog);
-    if (window.confirm(`Really delete ${blog.title} by ${blog.author}?`)) {
-      deleteBlog(blog);
-      navigate("/");
-    }
   };
 
   const handleLike = async ({ id, likes }) => {
@@ -127,10 +116,7 @@ const App = () => {
       >
         <Routes>
           <Route path="/login" element={<LoginForm />} />
-          <Route
-            index
-            element={<BlogList handleBlogDelete={handleBlogDelete} />}
-          />
+          <Route index element={<BlogList />} />
           <Route
             path="/blogs/:id"
             element={<Blog blog={blog} updateLike={handleLike} />}
