@@ -6,7 +6,11 @@ const baseUrl = import.meta.env.PROD
 let userToken = null;
 
 const setToken = (newToken) => {
-  userToken = `Bearer ${newToken}`;
+  if (newToken === null) {
+    userToken = null;
+  } else {
+    userToken = `Bearer ${newToken}`;
+  }
 };
 
 const getAll = () => {

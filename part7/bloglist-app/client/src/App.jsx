@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Routes, Route, Link, useMatch } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -17,21 +17,23 @@ import Blog from "./components/Blog";
 import BlogList from "./components/BlogList";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
+import LoginForm from "./components/LoginForm";
 
 import blogService from "./services/blogs";
-import loginService from "./services/login";
 
 import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
-import { useBlogActions, useNotificationActions } from "./store";
+import {
+  useBlogActions,
+  useNotificationActions,
+  useUser,
+  useUserActions,
+} from "./store";
 
 const App = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-  //const [message, setMessage] = useState(null);
   const { setMessage } = useNotificationActions();
   const { initialize, deleteBlog, getBlog, updateLike } = useBlogActions();
+  const { setUser } = useUserActions();
+  const user = useUser();
 
   //const newBlogTogglableRef = useRef()
   const navigate = useNavigate();
@@ -45,43 +47,20 @@ const App = () => {
 
   useEffect(() => {
     const storedUserJSON = window.localStorage.getItem("currentBlogUser");
+    console.log("storedUser effect called");
     if (storedUserJSON) {
-      const user = JSON.parse(storedUserJSON);
-      if (user && user.token) {
-        setUser(user);
-        blogService.setToken(user.token);
+      const storedUser = JSON.parse(storedUserJSON);
+      if (storedUser && storedUser.token) {
+        setUser(storedUser);
+        blogService.setToken(storedUser.token);
       }
     }
-  }, []);
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    try {
-      const userInfo = await loginService.login({ username, password });
-      window.localStorage.setItem("currentBlogUser", JSON.stringify(user));
-      setUser(userInfo);
-      console.log("handleLogin userInfo:", userInfo);
-      blogService.setToken(userInfo.token);
-      setUsername("");
-      setPassword("");
-      navigate("/");
-      setMessage({ text: `${userInfo.name} logged in.`, type: "success" });
-      //return redirect('/')
-    } catch (error) {
-      setMessage({
-        text: "Login failed. Check username/password.",
-        type: "error",
-      });
-      setUsername("");
-      setPassword("");
-      console.error("caught error ", error);
-    }
-    console.log("handleLogin called username:", username, "password", password);
-  };
+  }, [setUser]);
 
   const handleLogout = (event) => {
     event.preventDefault();
     setUser(null);
+    blogService.setToken(null);
     window.localStorage.removeItem("currentBlogUser");
   };
 
@@ -97,38 +76,6 @@ const App = () => {
     console.log("updating likes for", id, "to", likes);
     updateLike({ id, likes });
   };
-
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        <h2>Login to BlogList</h2>
-      </div>
-      <FormControl>
-        <TextField
-          label="Username"
-          value={username}
-          name="username"
-          autoComplete="username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </FormControl>
-      <FormControl>
-        <TextField
-          label="Password"
-          type="password"
-          value={password}
-          autoComplete="current-password"
-          name="password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </FormControl>
-      <div>
-        <Button type="submit" variant="contained">
-          login
-        </Button>
-      </div>
-    </form>
-  );
 
   const style = { "&:hover": { bgcolor: "rgba(255,255,255,0.3)" } };
   return (
@@ -189,7 +136,7 @@ const App = () => {
         )}
       >
         <Routes>
-          <Route path="/login" element={loginForm()} />
+          <Route path="/login" element={<LoginForm />} />
           <Route
             index
             element={<BlogList handleBlogDelete={handleBlogDelete} />}
@@ -201,7 +148,6 @@ const App = () => {
                 blog={blog}
                 updateLike={handleLike}
                 deleteBlog={handleBlogDelete}
-                user={user}
               />
             }
           />

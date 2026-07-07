@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../store";
 
 import { Box, Typography, Stack, Link, Button, Divider } from "@mui/material";
-const Blog = ({ user, blog, updateLike, deleteBlog }) => {
+const Blog = ({ blog, updateLike, deleteBlog }) => {
   //const [visible, setVisible] = useState(false)
   const [likes, setLikes] = useState(blog ? blog.likes : 0);
   //const hideWhenVisible = { display: visible ? 'none' : '' }
   //const showWhenVisible = { display: visible ? '' : 'none' }
   const navigate = useNavigate();
+  const user = useUser();
 
   console.log("Blog: ", blog);
   useEffect(() => {
@@ -29,10 +31,11 @@ const Blog = ({ user, blog, updateLike, deleteBlog }) => {
   const onDelete = () => {
     deleteBlog(blog);
   };
+
   if (blog) {
     return (
       <Box className="blog" sx={{ m: 2 }}>
-        <Typography variant="h3" className="blog_title">
+        <Typography variant="h4" className="blog_title">
           {blog.title}
         </Typography>
         <Typography variant="subtitle1" className="blog_author">
