@@ -133,13 +133,7 @@ const App = () => {
           />
           <Route
             path="/blogs/:id"
-            element={
-              <Blog
-                blog={blog}
-                updateLike={handleLike}
-                deleteBlog={handleBlogDelete}
-              />
-            }
+            element={<Blog blog={blog} updateLike={handleLike} />}
           />
           <Route path="/newblog" element={<NewBlog />} />
           <Route

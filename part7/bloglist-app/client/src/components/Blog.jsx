@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../store";
+import { useUser, useBlogActions } from "../store";
 
 import { Box, Typography, Stack, Link, Button, Divider } from "@mui/material";
-const Blog = ({ blog, updateLike, deleteBlog }) => {
+const Blog = ({ blog, updateLike }) => {
   //const [visible, setVisible] = useState(false)
   const [likes, setLikes] = useState(blog ? blog.likes : 0);
   //const hideWhenVisible = { display: visible ? 'none' : '' }
   //const showWhenVisible = { display: visible ? '' : 'none' }
   const navigate = useNavigate();
   const user = useUser();
+  const { deleteBlog } = useBlogActions();
 
   console.log("Blog: ", blog);
   useEffect(() => {
@@ -28,8 +29,12 @@ const Blog = ({ blog, updateLike, deleteBlog }) => {
     updateLike({ id: blog.id, likes: blog.likes });
   };
 
-  const onDelete = () => {
-    deleteBlog(blog);
+  const handleBlogDelete = async () => {
+    console.log("delete handler for ", blog);
+    if (window.confirm(`Really delete ${blog.title} by ${blog.author}?`)) {
+      deleteBlog(blog);
+      navigate("/");
+    }
   };
 
   if (blog) {
@@ -68,7 +73,7 @@ const Blog = ({ blog, updateLike, deleteBlog }) => {
                 name="delete"
                 variant="outlined"
                 color="error"
-                onClick={onDelete}
+                onClick={handleBlogDelete}
               >
                 DELETE
               </Button>
