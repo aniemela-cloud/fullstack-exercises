@@ -51,7 +51,7 @@ const UserList = () => {
               return (
                 <TableRow key={user.id}>
                   <TableCell>
-                    <Link to={`users/${user.id}`}>{user.name}</Link>
+                    <Link to={`${user.id}`}>{user.name}</Link>
                   </TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.blogs.length}</TableCell>

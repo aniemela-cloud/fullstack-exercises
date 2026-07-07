@@ -9,7 +9,7 @@ import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import UserList from "./components/UserList";
-
+import UserDetails from "./components/UserDetails";
 import blogService from "./services/blogs";
 import persistService from "./services/persistentUser";
 
@@ -29,6 +29,7 @@ const App = () => {
 
   const match = useMatch("/blogs/:id");
   const blog = match ? getBlog(match.params.id) : null;
+  //  const userMatch = useMatch("/users/:id");
 
   useEffect(() => {
     initialize();
@@ -122,6 +123,7 @@ const App = () => {
           <Route path="/blogs/:id" element={<Blog blog={blog} />} />
           <Route path="/newblog" element={<NewBlog />} />
           <Route path="/users" element={<UserList />} />
+          <Route path="/users/:id" element={<UserDetails />} />
           <Route
             path="/*"
             element={
